@@ -15,8 +15,8 @@ More details and benchmark information can be found on their blogpost here:
 
 ## LLM Studio Parameters
 
-- Context length: 8192
-- GPU offload: 48/56
+- Context length: 4096
+- GPU offload: 56/56
 - CPU thread pool: 9
 - Evaluation batch size: 512
 - RoPE Frequency Base: auto
@@ -41,3 +41,5 @@ More details and benchmark information can be found on their blogpost here:
 - Assumed a Python environment by default:
 
     > This is Python environment, but it seems like you're asking to write SQL code. Here's an example of how your procedures could be written:
+
+- In C# code generation tasks, it only provided skeletons for a few classes and nothing else. According to the model, creating Asp.Net Razor pages, unitary and integration `won't be provided here due to the complexity of the task`.
