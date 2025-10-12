@@ -1,0 +1,30 @@
+@page
+@model ActivityTracker.Pages.Activities.IndexModel
+
+<h1>Activities</h1>
+<p><a asp-page="Create">Create New</a></p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var activity in Model.Activities)
+        {
+            <tr>
+                <td>@activity.Name</td>
+                <td>@activity.StartDate?.ToShortDateString()</td>
+                <td>@activity.EndDate?.ToShortDateString()</td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@activity.ActivityId">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@activity.ActivityId">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@activity.ActivityId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

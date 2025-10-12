@@ -41,3 +41,4 @@
 - It missed some explicit instructions, like not using Update* as input parameters in the retrieve stored procedures.
 - On the other hand, it was the only model to suggest a cleaner way of handling stored procedures errors by using a separate stored procedure, called `dbo.RunWithErrorLogging`, to store the error data. Nice. :-)
 - This model took longer to complete this task because it generated two sets of stored procedures, with and without the try...catch block for handling errors on Insert, Update or Select operations.
+- The model generated tons of C# code. However, when outputing the latest classes after a long thought, it ran out of context/memory and could not proceed. A 32GB video card may help with that.

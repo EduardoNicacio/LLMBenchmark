@@ -1,0 +1,12 @@
+@page
+@model ActivityTracker.Pages.Activities.CreateModel
+
+<h1>Create Activity</h1>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Activity.Name"></label>
+        <input asp-for="Activity.Name" class="form-control" />
+    </div>
+    <!-- Add other fields similarly -->
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
