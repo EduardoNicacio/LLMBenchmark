@@ -14,8 +14,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vel enim diam. S
 
 Donec et interdum neque, quis efficitur ipsum. Vestibulum hendrerit a dolor ut bibendum. Vivamus tincidunt commodo erat sit amet condimentum. Sed at dolor et enim tristique dictum vel quis felis. Nam euismod mauris at dui laoreet tempus. Etiam sit amet lacinia felis. Sed vel sollicitudin sapien. Nullam est metus, faucibus vitae lacus in, elementum euismod ligula. Phasellus maximus tortor a iaculis dignissim. Morbi id finibus massa. Donec et lobortis quam, vel blandit diam. Ut quis accumsan urna.
 
-## Target LLM Models
+## Target Large Language Models - LLMs
 
+- [cohere/command-a-03-2025](/command-a-03-2025/readme.md) - Online model
 - [deepseek/deepseek-coder-v2-lite-instruct](/deepseek-coder-v2-lite-instruct/readme.md)
 - [google/gemma-3-12b](/gemma-3-12b/readme.md)
 - [google/codegemma-7b](/codegemma-7b-GGUF/readme.md)
@@ -43,7 +44,15 @@ Donec et interdum neque, quis efficitur ipsum. Vestibulum hendrerit a dolor ut b
 
 ## T-SQL Generation (MS SQL Server 2022)
 
-Context:
+Below is the full prompt as used for all the models (including Cohere Command):
+
+---
+
+Task:
+
+Generate SQL stored procedures for the Activity table based on the following requirements. Use T-SQL syntax and ensure the code is production-ready.
+
+Table Definition:
 
 ```sql
 CREATE TABLE [dbo].[Activity](
@@ -69,182 +78,175 @@ CREATE TABLE [dbo].[Activity](
     [UpdatedByUser] [nvarchar](100) NULL,
     [UpdatedByProgram] [nvarchar](100) NULL,
     [SystemTimestamp] [timestamp] NOT NULL,
- CONSTRAINT [PK_Activity_ActivityId] PRIMARY KEY CLUSTERED
-(
-    [ActivityId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+    CONSTRAINT [PK_Activity_ActivityId] PRIMARY KEY CLUSTERED ([ActivityId] ASC)
+) ON [PRIMARY];
 GO
 ```
 
-Given the table above, create the following stored procedures:
+Stored Procedures to Create:
 
-- **usp_[Entity]Insert** - include all columns as input parameters, except UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp. It must explicitly have the columns CreatedDateTime, CreatedByUser, and CreatedByProgram as input parameters - these will come from the Web Application. Defaults all the nullable columns to NULL respecting the table definition.
+`usp_ActivityInsert`:
 
-- **usp_[Entity]Delete** - include only [Entity]Id, UpdatedDateTime, UpdatedByUser, UpdatedByProgram and SystemTimestamp as input parameters. The record must be soft-deleted (SystemDeleteFlag = 'Y'), the values for UpdatedDateTime, UpdatedByUser, UpdatedByProgram must be validated for null values, and should default, respectively, to SYSUTCDATETIME(), SYSTEM_USER and APP_NAME() if they are null. Finally, SystemTimestamp must be used to perform an optimistic lock verification.
+- Input parameters: All columns except UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp.
+- Explicitly include CreatedDateTime, CreatedByUser, and CreatedByProgram as input parameters.
+- Default nullable columns to NULL.
 
-- **usp_[Entity]Update** - include all the columns as input parameters, except CreatedDateTime, CreatedByUser, and CreatedByProgram. The values for UpdatedDateTime, UpdatedByUser, UpdatedByProgram must be validated for null values, and should default, respectively, to SYSUTCDATETIME(), SYSTEM_USER and APP_NAME() if they are null. The value from SystemTimestamp will be used to perform an optimistic lock verification.
+`usp_ActivityDelete`:
 
-- **usp_[Entity]Retrieve** - include all the columns from the table as input parameters, defaulting them to NULL, except UpdatedDateTime, UpdatedByUser, and UpdatedByProgram. The result-set must contain all the columns from the table definition. The input parameter ActiveFlag must default to 1 instead of NULL. The input parameter SystemDeletedFlag must be defaulted to 'N' instead of NULL. Both parameters ActiveFlag and SystemDeletedFlag do not require validation against NULL values in the body of the stored procedure. The columns UpdatedDateTime, UpdatedByUser, and UpdatedByProgram **SHOULD NOT** be used in this stored procedure.
+- Input parameters: ActivityId, UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp.
+- Soft-delete by setting SystemDeleteFlag = 'Y'.
+- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram to SYSUTCDATETIME(), SYSTEM_USER, and APP_NAME() if null.
+- Use SystemTimestamp for optimistic locking.
 
-- **usp_[Entity]RetrieveForList** - this stored procedure must retrieve all the non-deleted (SystemDeletedFlag <> 'Y') and active (ActiveFlag = 1) records of the type [Entity], and only two columns: [Entity]Id and Name. This list will be used to generate drop-down lists in the Web application layer.
+`usp_ActivityUpdate`:
 
-For all the stored procedures:
+- Input parameters: All columns except CreatedDateTime, CreatedByUser, and CreatedByProgram.
+- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram to SYSUTCDATETIME(), SYSTEM_USER, and APP_NAME() if null.
+- Use SystemTimestamp for optimistic locking.
 
-1. Include '= NULL' after the input parameters that can be null based on the table definition; validate the input parameters for their types/sizes/nullability; raise an error 50001 for null parameters, an error 50002 for char, varchar, nchar and nvarchar parameters which extrapolate the length of the columns, and an error 50003 for invalid flag parameters (ActiveFlag must be either 0 or 1, and SystemDeletedFlag must be either 'N' or 'Y').
+`usp_ActivityRetrieve`:
 
-2. Include the statements SELECT, INSERT and UPDATE within a try...catch block; the catch block must include an insert to the table DbError as follows:
+- Input parameters: All columns (defaulted to NULL), except UpdatedDateTime, UpdatedByUser, and UpdatedByProgram.
+- Default ActiveFlag to 1 and SystemDeleteFlag to 'N'.
+- Use wildcard search for varchar and nvarchar columns:
 
-```sql
-BEGIN CATCH
-    -- Log the error in the table DbError
-    INSERT INTO [dbo].[DbError] (
-        ErrorNumber,
-        ErrorSeverity,
-        ErrorState,
-        ErrorProcedure,
-        ErrorLine,
-        ErrorMessage
-    )
-    SELECT 
-        ERROR_NUMBER() AS ErrorNumber,
-        ERROR_SEVERITY() AS ErrorSeverity,
-        ERROR_STATE() AS ErrorState,
-        ERROR_PROCEDURE() AS ErrorProcedure,
-        ERROR_LINE() AS ErrorLine,
-        ERROR_MESSAGE() AS ErrorMessage;
-    RAISERROR('50000', 16, 1, 'Error occurred during [Operation] operation.');
-END CATCH;
-```
+    `(@Parameter IS NULL OR CHARINDEX(@Parameter, [Column], 0) > 0)`
 
-3. The stored procedure usp_[Entity]Retrieve must use the following pattern for varchar and nvarchar columns that are part of the search criteria:
+- Use date range search for date columns:
 
-```sql
-(@Parameter IS NULL OR CHARINDEX(@Parameter, [Column], 0) > 0)
-```
+    `(@DateTimeParameter IS NULL OR DateTimeColumn >= @DateTimeParameter AND DateTimeColumn < DATEADD(day, 1, @DateTimeParameter))`
 
-4. The stored procedure usp_[Entity]Retrieve also must use the following pattern for date, time, datetime or datetime2 columns included in the search criteria:
+`usp_ActivityRetrieveForList`:
 
-```sql
-(@DateTimeParameter IS NULL OR DateTimeColumn >= @DateTimeParameter AND DateTimeColumn < DATEADD(day, 1, @DateTimeParameter))
-```
+- Retrieve ActivityId and Name for active, non-deleted records (ActiveFlag = 1 and SystemDeleteFlag <> 'Y').
 
-5. For all the cases of optimistic lock violation: return an error 50004 with the message:
+General Requirements for All Stored Procedures:
 
-```txt
-"Operation failed because another user has updated or deleted this [Entity]. Your changes have been lost. Please review their changes before trying again.".
-```
+- Validate input parameters for type, size, and nullability.
+- Raise error 50001 for null parameters.
+- Raise error 50002 for string parameters exceeding column length.
+- Raise error 50003 for invalid ActiveFlag (must be 0 or 1) or SystemDeleteFlag (must be 'N' or 'Y').
+- Wrap SELECT, INSERT, and UPDATE statements in a TRY...CATCH block.
+- Log errors to dbo.DbError table in the CATCH block.
+- Raise error 50000 with message: "Error occurred during [Operation] operation."
+- For optimistic lock violations, raise error 50004 with message:
 
-6. Include each stored procedure in a separate SQL code block with all the necessary code for it to run.
+    `"Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again."`
 
-Good luck.
+- Enclose each stored procedure in a separate SQL code block.
+
+Output Format:
+
+Provide each stored procedure in a separate code block, fully functional and ready to execute.
+
+---
 
 ## C# Model Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## C# DTO Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## C# ViewModel Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## C# Repository Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## Asp.Net Core Minimal API Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## Asp.Net Core Razor Pages Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## Unit Tests Generation (with NUnit)
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## Integrated Tests Generation (With Moq)
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## Results
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### T-SQL Generation
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### C# Models
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### C# DTOs
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### C# ViewModels
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### C# Repositories
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### Asp.Net Core Minimal APIs
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### Asp.Net Core Razor Page(s)
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### Unit Tests results
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ### Integration Tests results
 
 ```txt
-[placeholder]
+TBD
 ```
 
 ## Comments
