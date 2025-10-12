@@ -273,5 +273,8 @@ With all that said, choosing the right model for the tasks above allowed me to r
 - [llama.cpp](https://github.com/ggml-org/llama.cpp)
 - [Hugging Face](https://huggingface.co/)
 - [Lorem Ipsum generator](https://www.lipsum.com/feed/html)
+- [Microsoft Visual Studio Code](https://code.visualstudio.com/)
+- [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs/)
+- [Microsoft SQL Server 2022](https://www.microsoft.com/en-ca/sql-server/sql-server-2022)
 
 Found these findings useful? Leave a star. :-)
