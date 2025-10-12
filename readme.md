@@ -191,63 +191,43 @@ TBD
 
 ## Results
 
-```txt
-TBD
-```
+[placeholder]
 
 ### T-SQL Generation
 
-```txt
-TBD
-```
+[placeholder]
 
 ### C# Models
 
-```txt
-TBD
-```
+[placeholder]
 
 ### C# DTOs
 
-```txt
-TBD
-```
+[placeholder]
 
 ### C# ViewModels
 
-```txt
-TBD
-```
+[placeholder]
 
 ### C# Repositories
 
-```txt
-TBD
-```
+[placeholder]
 
 ### Asp.Net Core Minimal APIs
 
-```txt
-TBD
-```
+[placeholder]
 
 ### Asp.Net Core Razor Page(s)
 
-```txt
-TBD
-```
+[placeholder]
 
 ### Unit Tests results
 
-```txt
-TBD
-```
+[placeholder]
 
 ### Integration Tests results
 
-```txt
-TBD
-```
+[placeholder]
 
 ## Comments
 
