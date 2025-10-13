@@ -31,14 +31,15 @@
 
 ## Performance
 
-- Thought for: ~2min
-- Tokens per second: 50.19
+- Thought for: ~2min / ~4min
+- Tokens per second: 50.19 / 49.07
 
 ## Observations
 
-- Differently from other "thinking" or "reasoning" models, it displays its chain of thought right in the LLM chat output. Nice. :-)
+- Differently from other "thinking" or "reasoning" models, it displays its chain of thought directly in the LLM chat output. Nice. :-)
 - It included a nice documentation at the header of each stored procedure, and split them all into separate code blocks as asked.
 - It missed some explicit instructions, like not using Update* as input parameters in the retrieve stored procedures.
-- On the other hand, it was the only model to suggest a cleaner way of handling stored procedures errors by using a separate stored procedure, called `dbo.RunWithErrorLogging`, to store the error data. Nice. :-)
-- This model took longer to complete this task because it generated two sets of stored procedures, with and without the try...catch block for handling errors on Insert, Update or Select operations.
-- The model generated tons of C# code. However, when outputing the latest classes after a long thought, it ran out of context/memory and could not proceed. A 32GB video card may help with that.
+- On the other hand, it was one of the few models to suggest a cleaner way of handling parameter validation and execution error logging by using a separate stored procedure, called `dbo.RunWithErrorLogging`. Nice. :-)
+- This model took longer to complete these tasks because it generated two sets of stored procedures, with and without the try...catch block for handling errors on Insert, Update or Select operations.
+- The model generated tons of C# code. However, when outputing the latest classes after a long thought, it ran out of context/memory and could not proceed. A 24/32GB video card may help with that.
+- The model spent over 2h of GPU time writing C# code and fine-tunning it. I've aborted the execution on the final step, when the model was about to display its final answer.

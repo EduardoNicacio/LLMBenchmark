@@ -79,3 +79,4 @@ BEGIN
         RAISERROR('50000',16,1,'Error occurred during INSERT operation.');
     END CATCH;
 END; /* usp_ActivityInsert */
+GO

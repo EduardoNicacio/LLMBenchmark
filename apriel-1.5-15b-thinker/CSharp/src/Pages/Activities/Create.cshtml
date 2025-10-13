@@ -1,0 +1,27 @@
+@page "/activities/create"
+@model ActivityCreateViewModel
+@{
+    ViewData["Title"] = "Create new activity";
+}
+
+<h2>Create</h2>
+
+<form method="post" asp-page="/Activities/Create">
+    <div>
+        <label asp-for="ProjectId">Project Id</label>
+        <input asp-for="ProjectId" />
+    </div>
+    <div>
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description"></textarea>
+    </div>
+
+    <!-- Additional fields omitted for brevity -->
+
+    <button type="submit">Create</button>
+    <a asp-page="/Activities/Index">Cancel</a>
+</form>

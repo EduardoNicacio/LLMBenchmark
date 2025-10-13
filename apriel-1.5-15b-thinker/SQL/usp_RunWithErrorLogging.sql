@@ -23,3 +23,4 @@ BEGIN
         RAISERROR('50000',16,1,'Error occurred during %s operation.', @OperationName);
     END CATCH;
 END; /* dbo.RunWithErrorLogging */
+GO

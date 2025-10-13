@@ -58,3 +58,4 @@ BEGIN
         RAISERROR('50000',16,1,'Error occurred during DELETE operation.');
     END CATCH;
 END; /* usp_ActivityDelete */
+GO

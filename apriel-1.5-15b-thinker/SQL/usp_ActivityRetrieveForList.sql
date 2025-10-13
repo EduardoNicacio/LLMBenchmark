@@ -31,3 +31,4 @@ BEGIN
         RAISERROR('50000',16,1,'Error occurred during SELECT operation for list.');
     END CATCH;
 END; /* usp_ActivityRetrieveForList */
+GO

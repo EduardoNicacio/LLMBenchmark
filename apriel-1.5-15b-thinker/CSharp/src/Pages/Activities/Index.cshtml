@@ -1,0 +1,19 @@
+@page "/activities"
+@model ListActivityViewModel
+
+<h2>All Activities</h2>
+
+<ul>
+@foreach (var activity in Model.Activities)
+{
+    <li>
+        @activity.Name<br />
+        Project: @activity.ProjectId<br />
+        Status: @activity.ProgressStatus
+    </li>
+}
+</ul>
+
+<p>
+    <a asp-page="/Activities/Create">Create new activity</a>
+</p>

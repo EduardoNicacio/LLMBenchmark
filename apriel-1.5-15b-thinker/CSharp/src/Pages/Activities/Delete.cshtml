@@ -1,0 +1,14 @@
+@page "/activities/delete/{ActivityId}"
+@model UpdateActivityViewModel  // Reusing same view model for simplicity
+
+<h2>Confirm deletion</h2>
+
+<p>
+    <strong>Are you sure?</strong>
+</p>
+
+<form method="post" asp-page="/Activities/Delete">
+    <button type="submit">Delete</button>
+</form>
+
+<a asp-page="/Activities/Index">Cancel</a>

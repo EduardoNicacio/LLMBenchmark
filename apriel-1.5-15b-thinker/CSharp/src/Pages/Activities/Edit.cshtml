@@ -1,0 +1,16 @@
+@page "/activities/edit/{ActivityId}"
+@model UpdateActivityViewModel
+@{
+    ViewData["Title"] = "Edit activity";
+}
+
+<h2>Edit</h2>
+
+<form method="post" asp-page="/Activities/Edit">
+    <input type="hidden" asp-for="ActivityId" />
+
+    <!-- Fields similar to Create view, but include readonly fields for IDs -->
+
+    <button type="submit">Save</button>
+    <a asp-page="/Activities/Index">Cancel</a>
+</form>

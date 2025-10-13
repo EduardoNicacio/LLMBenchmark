@@ -94,3 +94,4 @@ BEGIN
         RAISERROR('50000',16,1,'Error occurred during SELECT operation.');
     END CATCH;
 END; /* usp_ActivityRetrieve */
+GO

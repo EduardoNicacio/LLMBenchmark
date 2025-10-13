@@ -99,3 +99,4 @@ BEGIN
         RAISERROR('50000',16,1,'Error occurred during UPDATE operation.');
     END CATCH;
 END; /* usp_ActivityUpdate */
+GO
