@@ -1,0 +1,20 @@
+@page "./Edit"
+@model MyApplication.Pages.Activities.EditModel
+@{
+    ViewData["Title"] = "Edit Activity";
+}
+
+<h1>Edit Activity</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="@Model.Activity.ActivityId" />
+
+    <div>
+        <label for="EndDate">End Date:</label>
+        <input type="date" id="EndDate" name="EndDate" asp-for="@Model.Activity.EndDate" class="form-control" />
+        <span asp-validation-for="Model.Activity.EndDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+</form>

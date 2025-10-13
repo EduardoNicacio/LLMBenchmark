@@ -1,0 +1,30 @@
+@page "./Create"
+@model MyApplication.Pages.Activities.CreateModel
+@{
+    ViewData["Title"] = "Create Activity";
+}
+
+<h1>Create Activity</h1>
+
+<form method="post">
+    <div>
+        <label for="ProjectId">Project ID:</label>
+        <input type="number" id="ProjectId" name="ProjectId" asp-for="@Model.Activity.ProjectId" class="form-control" />
+        <span asp-validation-for="Model.Activity.ProjectId" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="ProjectMemberId">Project Member ID:</label>
+        <input type="number" id="ProjectMemberId" name="ProjectMemberId" asp-for="@Model.Activity.ProjectMemberId" class="form-control" />
+        <span asp-validation-for="Model.Activity.ProjectMemberId" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="Name" asp-for="@Model.Activity.Name" class="form-control" />
+        <span asp-validation-for="Model.Activity.Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+</form>

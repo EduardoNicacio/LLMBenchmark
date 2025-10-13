@@ -1,0 +1,21 @@
+@page "./Delete"
+@model MyApplication.Pages.Activities.DeleteModel
+@{
+    ViewData["Title"] = "Delete Activity";
+}
+
+<h1>Delete Activity</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Activity</h4>
+    <dl class="row">
+        <dt>Name</dt>
+        <dd>@Html.DisplayFor(model => model.Activity.Name)</dd>
+    </dl>
+</div>
+<form method="post">
+    <input type="hidden" asp-for="@Model.Activity.ActivityId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+</form>

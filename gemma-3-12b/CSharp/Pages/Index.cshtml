@@ -1,0 +1,31 @@
+@page "./Index"
+@model MyApplication.Pages.Activities.IndexModel
+@{
+    ViewData["Title"] = "Activity List";
+}
+
+<h1>Activity List</h1>
+
+<a asp-page="./Create">Create New Activity</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var activity in Model.Activities)
+        {
+            <tr>
+                <td>@activity.Name</td>
+                <td>
+                    <a asp-page="./Details" asp-route="id="@activity.ActivityId">Details</a> |
+                    <a asp-page="./Edit" asp-route="id="@activity.ActivityId">Edit</a> |
+                    <a asp-page="./Delete" asp-route="id="@activity.ActivityId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

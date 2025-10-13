@@ -1,37 +1,43 @@
-CREATE PROCEDURE dbo.usp_ActivityInsert (
-    @ActivityId UNIQUEIDENTIFIER = NULL,
-    @ProjectId UNIQUEIDENTIFIER = NULL,
-    @ProjectMemberId UNIQUEIDENTIFIER = NULL,
-    @Name NVARCHAR(128) = NULL,
-    @Description NVARCHAR(4000) = NULL,
-    @StartDate DATE = NULL,
-    @TargetDate DATE = NULL,
-    @EndDate DATE = NULL,
-    @ProgressStatus TINYINT = NULL,
-    @ActivityPoints SMALLINT = NULL,
-    @Priority TINYINT = NULL,
-    @Risk TINYINT = NULL,
-    @Tags NVARCHAR(200) = NULL,
-    @ActiveFlag TINYINT = 1, -- Default to Active
-    @SystemDeleteFlag CHAR(1) = 'N', -- Default to Not Deleted
-    @CreatedDateTime DATETIME2(7) = SYSUTCDATETIME(),
-    @CreatedByUser NVARCHAR(100) = SYSTEM_USER,
-    @CreatedByProgram NVARCHAR(100) = APP_NAME()
+-- usp_ActivityInsert
+CREATE PROCEDURE [dbo].[usp_ActivityInsert] (
+    @ProjectId uniqueidentifier = NULL,
+    @ProjectMemberId uniqueidentifier = NULL,
+    @Name nvarchar(128) = NULL,
+    @Description nvarchar(4000) = NULL,
+    @StartDate date = NULL,
+    @TargetDate date = NULL,
+    @EndDate date = NULL,
+    @ProgressStatus tinyint = NULL,
+    @ActivityPoints smallint = NULL,
+    @Priority tinyint = NULL,
+    @Risk tinyint = NULL,
+    @Tags nvarchar(200) = NULL,
+    @ActiveFlag tinyint = 1, -- Default to active
+    @SystemDeleteFlag char(1) = 'N', -- Default to not deleted
+    @CreatedDateTime datetime2(7) = SYSUTCDATETIME(),
+    @CreatedByUser nvarchar(100) = SYSTEM_USER,
+    @CreatedByProgram nvarchar(100) = APP_NAME()
 )
 AS
 BEGIN
     SET NOCOUNT ON;
 
     -- Input Validation
-    IF @ActivityId IS NULL RAISERROR (50001, 16, 1, 'ActivityId is required.');
-    IF LEN(@Name) > 128 RAISERROR (50002, 16, 1, 'Name exceeds maximum length of 128.');
-    IF LEN(@Description) > 4000 RAISERROR (50002, 16, 1, 'Description exceeds maximum length of 4000.');
-    IF @ActiveFlag NOT IN (0, 1) RAISERROR (50003, 16, 1, 'Invalid ActiveFlag value. Must be 0 or 1.');
-    IF @SystemDeleteFlag NOT IN ('N', 'Y') RAISERROR (50003, 16, 1, 'Invalid SystemDeleteFlag value. Must be N or Y.');
+    IF @Name IS NULL
+        RAISERROR (50001, 16, 1, 'Parameter @Name cannot be null.');
+
+	IF LEN(@Name) > 128
+		RAISERROR(50002, 16, 1, "Parameter @Name exceeds maximum length of 128.");
+
+    IF @ActiveFlag IS NOT NULL AND (@ActiveFlag <> 0 AND @ActiveFlag <> 1)
+        RAISERROR (50003, 16, 1, 'Parameter @ActiveFlag must be 0 or 1.');
+
+    IF @SystemDeleteFlag IS NOT NULL AND (@SystemDeleteFlag <> 'N' AND @SystemDeleteFlag <> 'Y')
+        RAISERROR (50003, 16, 1, 'Parameter @SystemDeleteFlag must be ''N'' or ''Y''.');
+
 
     BEGIN TRY
         INSERT INTO [dbo].[Activity] (
-            ActivityId,
             ProjectId,
             ProjectMemberId,
             Name,
@@ -51,7 +57,6 @@ BEGIN
             CreatedByProgram
         )
         VALUES (
-            @ActivityId,
             @ProjectId,
             @ProjectMemberId,
             @Name,
@@ -70,26 +75,17 @@ BEGIN
             @CreatedByUser,
             @CreatedByProgram
         );
+
+		-- Return the ActivityId of newly inserted record.
+		SELECT SCOPE_IDENTITY();
+
     END TRY
     BEGIN CATCH
-        -- Log the error in the table DbError
-	INSERT INTO [dbo].[DbError] (
-		ErrorNumber,
-		ErrorSeverity,
-		ErrorState,
-		ErrorProcedure,
-		ErrorLine,
-		ErrorMessage
-	)
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
+        IF ERROR_NUMBER() <> 0
+            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
+            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
 
-        THROW; -- Re-raise the error to be handled by the calling application.
-    END CATCH
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityInsert operation.');
+    END CATCH;
 END;
 GO

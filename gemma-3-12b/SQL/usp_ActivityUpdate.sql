@@ -1,91 +1,79 @@
-CREATE PROCEDURE dbo.usp_ActivityUpdate (
-    @ActivityId UNIQUEIDENTIFIER = NULL,
-    @ProjectId UNIQUEIDENTIFIER = NULL,
-    @ProjectMemberId UNIQUEIDENTIFIER = NULL,
-    @Name NVARCHAR(128) = NULL,
-    @Description NVARCHAR(4000) = NULL,
-    @StartDate DATE = NULL,
-    @TargetDate DATE = NULL,
-    @EndDate DATE = NULL,
-    @ProgressStatus TINYINT = NULL,
-    @ActivityPoints SMALLINT = NULL,
-    @Priority TINYINT = NULL,
-    @Risk TINYINT = NULL,
-    @Tags NVARCHAR(200) = NULL,
-    @ActiveFlag TINYINT = 1, -- Default to Active
-    @SystemDeleteFlag CHAR(1) = 'N', -- Default to Not Deleted
-    @UpdatedDateTime DATETIME2(7) = SYSUTCDATETIME(),
-    @UpdatedByUser NVARCHAR(100) = SYSTEM_USER,
-    @UpdatedByProgram NVARCHAR(100) = APP_NAME(),
-    @SystemTimestamp IMAGE = NULL  -- Use IMAGE for timestamp
+-- usp_ActivityUpdate
+CREATE PROCEDURE [dbo].[usp_ActivityUpdate] (
+    @ActivityId uniqueidentifier = NULL,
+    @ProjectId uniqueidentifier = NULL,
+    @ProjectMemberId uniqueidentifier = NULL,
+    @Name nvarchar(128) = NULL,
+    @Description nvarchar(4000) = NULL,
+    @StartDate date = NULL,
+    @TargetDate date = NULL,
+    @EndDate date = NULL,
+    @ProgressStatus tinyint = NULL,
+    @ActivityPoints smallint = NULL,
+    @Priority tinyint = NULL,
+    @Risk tinyint = NULL,
+    @Tags nvarchar(200) = NULL,
+    @ActiveFlag tinyint = 1, -- Default to active
+    @SystemDeleteFlag char(1) = 'N', -- Default to not deleted
+    @UpdatedDateTime datetime2(7) = NULL,
+    @UpdatedByUser nvarchar(100) = NULL,
+    @UpdatedByProgram nvarchar(100) = NULL,
+    @SystemTimestamp timestamp = NULL
 )
 AS
 BEGIN
     SET NOCOUNT ON;
 
     -- Input Validation
-    IF @ActivityId IS NULL RAISERROR (50001, 16, 1, 'ActivityId is required.');
-    IF LEN(@Name) > 128 RAISERROR (50002, 16, 1, 'Name exceeds maximum length of 128.');
-    IF LEN(@Description) > 4000 RAISERROR (50002, 16, 1, 'Description exceeds maximum length of 4000.');
-    IF @ActiveFlag NOT IN (0, 1) RAISERROR (50003, 16, 1, 'Invalid ActiveFlag value. Must be 0 or 1.');
-    IF @SystemDeleteFlag NOT IN ('N', 'Y') RAISERROR (50003, 16, 1, 'Invalid SystemDeleteFlag value. Must be N or Y.');
-    IF LEN(@UpdatedByUser) > 100 RAISERROR (50002, 16, 1, 'UpdatedByUser exceeds maximum length of 100.');
-    IF LEN(@UpdatedByProgram) > 100 RAISERROR (50002, 16, 1, 'UpdatedByProgram exceeds maximum length of 100.');
+    IF @ActivityId IS NULL
+        RAISERROR (50001, 16, 1, 'Parameter @ActivityId cannot be null.');
 
-    -- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram if null
-    IF @UpdatedDateTime IS NULL SET @UpdatedDateTime = SYSUTCDATETIME();
-    IF @UpdatedByUser IS NULL SET @UpdatedByUser = SYSTEM_USER;
-    IF @UpdatedByProgram IS NULL SET @UpdatedByProgram = APP_NAME();
+	IF @UpdatedDateTime IS NULL
+		RAISERROR(50001, 16, 1, "Parameter @UpdatedDateTime cannot be null.");
+
+    IF LEN(@Name) > 128 AND @Name IS NOT NULL
+        RAISERROR (50002, 16, 1, 'Parameter @Name exceeds maximum length of 128.');
+
+    IF @ActiveFlag IS NOT NULL AND (@ActiveFlag <> 0 AND @ActiveFlag <> 1)
+        RAISERROR (50003, 16, 1, 'Parameter @ActiveFlag must be 0 or 1.');
+
+    IF @SystemDeleteFlag IS NOT NULL AND (@SystemDeleteFlag <> 'N' AND @SystemDeleteFlag <> 'Y')
+        RAISERROR (50003, 16, 1, 'Parameter @SystemDeleteFlag must be ''N'' or ''Y''.');
+
 
     BEGIN TRY
-        -- Optimistic Lock Verification
-        IF EXISTS (SELECT 1 FROM [dbo].[Activity] WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp)
-        BEGIN
-            RAISERROR (50004, 16, 1, 'Operation failed because another user has updated or deleted this [Entity]. Your changes have been lost. Please review their changes before trying again.');
-            RETURN; -- Exit the stored procedure
-        END
-
         UPDATE [dbo].[Activity]
         SET
-            ProjectId = @ProjectId,
-            ProjectMemberId = @ProjectMemberId,
-            Name = @Name,
-            Description = @Description,
-            StartDate = @StartDate,
-            TargetDate = @TargetDate,
-            EndDate = @EndDate,
-            ProgressStatus = @ProgressStatus,
-            ActivityPoints = @ActivityPoints,
-            Priority = @Priority,
-            Risk = @Risk,
-            Tags = @Tags,
-            ActiveFlag = @ActiveFlag,
-            SystemDeleteFlag = @SystemDeleteFlag,
-            UpdatedDateTime = @UpdatedDateTime,
-            UpdatedByUser = @UpdatedByUser,
-            UpdatedByProgram = @UpdatedByProgram
+            ProjectId = ISNULL(@ProjectId, ProjectId),
+            ProjectMemberId = ISNULL(@ProjectMemberId, ProjectMemberId),
+            Name = ISNULL(@Name, Name),
+            Description = ISNULL(@Description, Description),
+            StartDate = ISNULL(@StartDate, StartDate),
+            TargetDate = ISNULL(@TargetDate, TargetDate),
+            EndDate = ISNULL(@EndDate, EndDate),
+            ProgressStatus = ISNULL(@ProgressStatus, ProgressStatus),
+            ActivityPoints = ISNULL(@ActivityPoints, ActivityPoints),
+            Priority = ISNULL(@Priority, Priority),
+            Risk = ISNULL(@Risk, Risk),
+            Tags = ISNULL(@Tags, Tags),
+            ActiveFlag = ISNULL(@ActiveFlag, ActiveFlag),
+            SystemDeleteFlag = ISNULL(@SystemDeleteFlag, SystemDeleteFlag),
+            UpdatedDateTime = ISNULL(@UpdatedDateTime, SYSUTCDATETIME()),
+            UpdatedByUser = ISNULL(@UpdatedByUser, SYSTEM_USER),
+            UpdatedByProgram = ISNULL(@UpdatedByProgram, APP_NAME())
         WHERE
             ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
+		IF @@ROWCOUNT = 0
+			RAISERROR(50004,16,1,"Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.");
+
     END TRY
     BEGIN CATCH
-	INSERT INTO [dbo].[DbError] (
-		ErrorNumber,
-		ErrorSeverity,
-		ErrorState,
-		ErrorProcedure,
-		ErrorLine,
-		ErrorMessage
-	)
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
+        IF ERROR_NUMBER() <> 0
+            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
+            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
 
-        THROW; -- Re-raise the error to be handled by the calling application.
-    END CATCH
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityUpdate operation.');
+    END CATCH;
 END;
 GO

@@ -1,60 +1,41 @@
-CREATE PROCEDURE dbo.usp_ActivityDelete (
-    @ActivityId UNIQUEIDENTIFIER = NULL,
-    @UpdatedDateTime DATETIME2(7) = SYSUTCDATETIME(),
-    @UpdatedByUser NVARCHAR(100) = SYSTEM_USER,
-    @UpdatedByProgram NVARCHAR(100) = APP_NAME(),
-    @SystemTimestamp IMAGE = NULL  -- Use IMAGE for timestamp
+-- usp_ActivityDelete
+CREATE PROCEDURE [dbo].[usp_ActivityDelete] (
+    @ActivityId uniqueidentifier = NULL,
+    @UpdatedDateTime datetime2(7) = NULL,
+    @UpdatedByUser nvarchar(100) = NULL,
+    @UpdatedByProgram nvarchar(100) = NULL,
+    @SystemTimestamp timestamp = NULL
 )
 AS
 BEGIN
     SET NOCOUNT ON;
 
     -- Input Validation
-    IF @ActivityId IS NULL RAISERROR (50001, 16, 1, 'ActivityId is required.');
-    IF LEN(@UpdatedByUser) > 100 RAISERROR (50002, 16, 1, 'UpdatedByUser exceeds maximum length of 100.');
-    IF LEN(@UpdatedByProgram) > 100 RAISERROR (50002, 16, 1, 'UpdatedByProgram exceeds maximum length of 100.');
+    IF @ActivityId IS NULL
+        RAISERROR (50001, 16, 1, 'Parameter @ActivityId cannot be null.');
 
-    -- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram if null
-    IF @UpdatedDateTime IS NULL SET @UpdatedDateTime = SYSUTCDATETIME();
-    IF @UpdatedByUser IS NULL SET @UpdatedByUser = SYSTEM_USER;
-    IF @UpdatedByProgram IS NULL SET @UpdatedByProgram = APP_NAME();
+	IF @UpdatedDateTime IS NULL
+		RAISERROR(50001, 16, 1, "Parameter @UpdatedDateTime cannot be null.");
 
     BEGIN TRY
-        -- Optimistic Lock Verification
-        IF EXISTS (SELECT 1 FROM [dbo].[Activity] WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp)
-        BEGIN
-            RAISERROR (50004, 16, 1, 'Operation failed because another user has updated or deleted this [Entity]. Your changes have been lost. Please review their changes before trying again.');
-            RETURN; -- Exit the stored procedure
-        END
-
         UPDATE [dbo].[Activity]
         SET
             SystemDeleteFlag = 'Y',
-            UpdatedDateTime = @UpdatedDateTime,
-            UpdatedByUser = @UpdatedByUser,
-            UpdatedByProgram = @UpdatedByProgram
+            UpdatedDateTime = ISNULL(@UpdatedDateTime, SYSUTCDATETIME()),
+            UpdatedByUser = ISNULL(@UpdatedByUser, SYSTEM_USER),
+            UpdatedByProgram = ISNULL(@UpdatedByProgram, APP_NAME())
         WHERE
             ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
+		IF @@ROWCOUNT = 0
+			RAISERROR(50004,16,1,"Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.");
     END TRY
     BEGIN CATCH
-	INSERT INTO [dbo].[DbError] (
-		ErrorNumber,
-		ErrorSeverity,
-		ErrorState,
-		ErrorProcedure,
-		ErrorLine,
-		ErrorMessage
-	)
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
+        IF ERROR_NUMBER() <> 0
+            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
+            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
 
-        THROW; -- Re-raise the error to be handled by the calling application.
-    END CATCH
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityDelete operation.');
+    END CATCH;
 END;
 GO
