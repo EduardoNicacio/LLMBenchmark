@@ -12,8 +12,8 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## LLM Studio Parameters
 
-- Context length: 8192
-- GPU offload: 36/40
+- Context length: 4096
+- GPU offload: 40/40
 - CPU thread pool: 9
 - Evaluation batch size: 512
 - RoPE Frequency Base: auto
@@ -28,9 +28,20 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## Performance
 
-- Thought for: 0min5s
-- Tokens per second: 10.83
+- Thought for: 5s / 3s
+- Tokens per second: 38.25 / 38.17
 
 ## Observations
 
-- Didn't break the stored procedures into separate code blocks
+- Didn't break each stored procedure into a separate code block for easy copy and paste. Resolved with the extra command below:
+
+    ```txt
+    Split each stored procedure above into its corresponding SQL code block.
+    ```
+
+- Included an extra utility function to validate input parameters, and an extra stored procedure to store the execution errors. Nice. :-)
+- Didn't generate a complete, production-ready C# code. Ended up with the message below:
+
+    ```txt
+    This completes the full-stack .NET application components for the Activity table. Each component is designed following best practices and includes proper validation and testing mechanisms.
+    ```
