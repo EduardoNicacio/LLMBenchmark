@@ -1,0 +1,8 @@
+@page "{id:guid}"
+@model YourNamespace.DTOs.ActivityReadDto
+@{
+    ViewData["Title"] = "Activity Details";
+}
+<h2>Activity Details</h2>
+<!-- Display activity details here -->
+<a asp-page="Edit" asp-route-id="@Model.ActivityId">Edit</a>
