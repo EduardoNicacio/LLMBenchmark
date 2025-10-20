@@ -30,7 +30,7 @@ Supports a context length of up to 262,144 tokens.
 
 ## Performance
 
-- Thought for: 1min2s
+- Thought for: 1min2s / 13.59s
 - Tokens per second: 119.09 / 125.43
 
 ## Observations
