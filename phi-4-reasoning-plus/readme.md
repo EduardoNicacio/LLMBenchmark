@@ -15,7 +15,7 @@ Phi-4-reasoning-plus is a state-of-the-art open-weight reasoning model finetuned
 
 ## LLM Studio Parameters
 
-- Context length: 8192
+- Context length: 16384
 - GPU offload: 40/40
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -31,9 +31,11 @@ Phi-4-reasoning-plus is a state-of-the-art open-weight reasoning model finetuned
 
 ## Performance
 
-- Thought for: 9min40s
-- Tokens per second: 49.99
+- Thought for: 4min12s / 4min27s
+- Tokens per second: 49.99 / 44.83
 
 ## Observations
 
-- Didn't observe the instruction to break the generated stored procedures into separate code blocks, increasing the time spent copying and pasting each one into a separate file.
+- Didn't observe the instruction to break the generated stored procedures into separate code blocks.
+- The C# code generation was messy; not ony it didn't break each file into a separate code block, but also transformed parts of the code into markdown headers.
+- Even though this isn't a codign-specific model, for being a Microsoft release I was expecting better results on both coding tasks.

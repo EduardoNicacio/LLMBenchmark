@@ -1,0 +1,11 @@
+@page "{id}"
+@model MyApp.Pages.Activity.DetailsModel
+
+<h2>Activity Details</h2>
+<div>
+    <p><strong>Name:</strong> @Model.ViewModel.Name</p>
+    <p><strong>Description:</strong> @Model.ViewModel.Description</p> <!-- Display additional properties as needed -->
+    <a href="./Edit/@Model.Id">Edit</a> |
+    <a href="./Delete/@Model.Id">Delete</a> |
+    <a href="./Index">Back to List</a>
+</div>

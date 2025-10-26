@@ -1,0 +1,37 @@
+@page
+@model MyApp.Pages.Activity.IndexModel
+
+<h2>Activity List</h2>
+@if (Model.ViewModel.Activities != null && Model.ViewModel.Activities.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <!-- Additional headers as needed -->
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ViewModel.Activities)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <!-- Add additional columns here -->
+                    <td>
+                        <a href="./Details/@item.ActivityId">Details</a> |
+                        <a href="./Edit/@item.ActivityId">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No activities found.</p>
+}
+
+<a href="./Create">Create New Activity</a>
