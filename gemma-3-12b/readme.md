@@ -1,6 +1,6 @@
 # Model
 
-- [google/gemma-3-12b](https://lmstudio.ai/models/google/gemma-3-12b)
+> [google/gemma-3-12b](https://lmstudio.ai/models/google/gemma-3-12b)
 
 ## Summary
 
@@ -10,14 +10,14 @@
 
 - Input:
 
-    Text string, such as a question, a prompt, or a document to be summarized
-    Images, normalized to 896 x 896 resolution and encoded to 256 tokens each
-    Total input context of 128K tokens for the 4B, 12B, and 27B sizes, and 32K tokens for the 1B size.
+  - Text string, such as a question, a prompt, or a document to be summarized
+  - Images, normalized to 896 x 896 resolution and encoded to 256 tokens each
+  - Total input context of 128K tokens for the 4B, 12B, and 27B sizes, and 32K tokens for the 1B size.
 
 - Output:
 
-    Generated text in response to the input, such as an answer to a question, analysis of image content, or a summary of a document
-    Total output context of 8192 tokens.
+  - Generated text in response to the input, such as an answer to a question, analysis of image content, or a summary of a document
+  - Total output context of 8192 tokens.
 
 ## LLM Studio Parameters
 
@@ -71,7 +71,7 @@
     This comprehensive response provides a solid foundation for your full-stack .NET application. Remember to adapt it to your specific project requirements and best practices.  Let me know if you'd like more details on any particular component!
     ```
 
-- After creating the missing Razor pages, provided the following inportant considerations:
+- After creating the missing Razor pages, provided the following important considerations:
 
     ```txt
     Important Considerations:

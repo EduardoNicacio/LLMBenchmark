@@ -1,6 +1,6 @@
 # Model
 
-- [meta-llama/llama-3.1-8b-Instruct](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
+> [meta-llama/llama-3.1-8b-Instruct](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
 
 ## Model Information
 

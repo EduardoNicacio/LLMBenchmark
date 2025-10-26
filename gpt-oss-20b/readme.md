@@ -1,6 +1,6 @@
 # Model
 
-[openai/gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
+> [openai/gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
 
 ## Summary
 
@@ -55,7 +55,7 @@
     NUnit, Moq, Microsoft.NET.Test.Sdk, coverlet.collector (for the tests)
     ```
 
-- Informed the right structure in which I should drop the files:
+- Provided the right folder structure in which I should drop the files:
 
     ```txt
     MyApp/

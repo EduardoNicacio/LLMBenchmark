@@ -1,6 +1,6 @@
 # Model
 
-- [servicenow-ai/apriel-1.5-15b-thinker](https://huggingface.co/ServiceNow-AI/Apriel-1.5-15b-Thinker)
+> [servicenow-ai/apriel-1.5-15b-thinker](https://huggingface.co/ServiceNow-AI/Apriel-1.5-15b-Thinker)
 
 ## Summary
 
@@ -36,10 +36,10 @@
 
 ## Observations
 
-- Differently from other "thinking" or "reasoning" models, it displays its chain of thought directly in the LLM chat output. Nice. :-)
+- Differently from other "thinking" or "reasoning" models, it displays its chain of thought directly in the LM Studio chat output.
 - It included a nice documentation at the header of each stored procedure, and split them all into separate code blocks as asked.
 - It missed some explicit instructions, like not using Update* as input parameters in the retrieve stored procedures.
-- On the other hand, it was one of the few models to suggest a cleaner way of handling parameter validation and execution error logging by using a separate stored procedure, called `dbo.RunWithErrorLogging`. Nice. :-)
+- On the other hand, it was one of the few models to suggest a cleaner way of handling parameter validation and execution error logging by using a separate stored procedure, called `dbo.RunWithErrorLogging`.
 - This model took longer to complete these tasks because it generated two sets of stored procedures, with and without the try...catch block for handling errors on Insert, Update or Select operations.
-- The model generated tons of C# code. However, when outputing the latest classes after a long thought, it ran out of context/memory and could not proceed. A 24/32GB video card may help with that.
+- The model generated tons of C# code. However, when outputting the latest classes after a long thought, it ran out of context/memory and could not proceed. A 24/32GB video card may help with that.
 - The model spent over 2h of GPU time writing C# code and fine-tunning it. I've aborted the execution on the final step, when the model was about to display its final answer. On a second attempt I let the model run loose and, after 4 hours of thinking/planning, it crashed.

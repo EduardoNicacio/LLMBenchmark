@@ -1,10 +1,12 @@
 # Model
 
-- [microsoft/phi-4-reasoning-plus](https://huggingface.co/microsoft/Phi-4-reasoning-plus)
+> [microsoft/phi-4-reasoning-plus](https://huggingface.co/microsoft/Phi-4-reasoning-plus)
 
 ## Summary
 
-Phi-4-reasoning-plus is a state-of-the-art open-weight reasoning model finetuned from Phi-4 using supervised fine-tuning on a dataset of chain-of-thought traces and reinforcement learning. The supervised fine-tuning dataset includes a blend of synthetic prompts and high-quality filtered data from public domain websites, focused on math, science, and coding skills as well as alignment data for safety and Responsible AI. The goal of this approach was to ensure that small capable models were trained with data focused on high quality and advanced reasoning. Phi-4-reasoning-plus has been trained additionally with Reinforcement Learning, hence, it has higher accuracy but generates on average 50% more tokens, thus having higher latency.
+Phi-4-reasoning-plus is a state-of-the-art open-weight reasoning model finetuned from Phi-4 using supervised fine-tuning on a dataset of chain-of-thought traces and reinforcement learning. The supervised fine-tuning dataset includes a blend of synthetic prompts and high-quality filtered data from public domain websites, focused on math, science, and coding skills as well as alignment data for safety and Responsible AI. The goal of this approach was to ensure that small capable models were trained with data focused on high quality and advanced reasoning. 
+
+Phi-4-reasoning-plus has been trained additionally with Reinforcement Learning, hence, it has higher accuracy but generates on average 50% more tokens, thus having higher latency.
 
 ## Highlights
 
@@ -37,5 +39,5 @@ Phi-4-reasoning-plus is a state-of-the-art open-weight reasoning model finetuned
 ## Observations
 
 - Didn't observe the instruction to break the generated stored procedures into separate code blocks.
-- The C# code generation was messy; not ony it didn't break each file into a separate code block, but also transformed parts of the code into markdown headers.
-- Even though this isn't a codign-specific model, for being a Microsoft release I was expecting better results on both coding tasks.
+- The C# code generation was messy; not only it didn't break each file into a separate code block, but also transformed parts of the code into markdown headers.
+- Even though this isn't a coding-specific model, for being a Microsoft release I was expecting better results on both coding tasks.

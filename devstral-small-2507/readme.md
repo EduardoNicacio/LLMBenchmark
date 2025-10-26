@@ -1,6 +1,6 @@
 # Model
 
-- [mistralai/devstral-small-2507](https://lmstudio.ai/models/mistralai/devstral-small-2507)
+> [mistralai/devstral-small-2507](https://lmstudio.ai/models/mistralai/devstral-small-2507)
 
 ## Summary
 

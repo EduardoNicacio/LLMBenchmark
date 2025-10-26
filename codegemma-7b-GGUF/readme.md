@@ -1,6 +1,6 @@
 # Model
 
-- [google/codegemma-7b](https://huggingface.co/google/codegemma-7b)
+> [google/codegemma-7b](https://huggingface.co/google/codegemma-7b)
 
 ## Summary
 
@@ -52,7 +52,7 @@ Please, make sure to not provide any extra spaces or newlines around the tokens,
 
 ## Observations
 
-- Strange results, like the model not generating anything at 153,846 tokens per second; or halucinating by affirming that using python with an ORM would be better than running the requested stored procedures.
+- Strange results, like the model not generating anything at 153,846 tokens per second; or hallucinating by affirming that using python with an ORM would be better than running the requested stored procedures.
 - Other times, the model generates garbage like below until it crashes:
 
     ```sql

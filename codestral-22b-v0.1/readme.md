@@ -1,6 +1,6 @@
 # Model
 
-- [mistralai/codestral-22b-v0.1](https://lmstudio.ai/models/mistralai/codestral-22b-v0.1)
+> [mistralai/codestral-22b-v0.1](https://lmstudio.ai/models/mistralai/codestral-22b-v0.1)
 
 ## Summary
 

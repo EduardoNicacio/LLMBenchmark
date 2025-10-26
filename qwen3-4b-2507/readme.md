@@ -1,6 +1,6 @@
 # Model
 
-- [qwen/qwen3-4b-2507](https://lmstudio.ai/models/qwen/qwen3-4b-2507)
+> [qwen/qwen3-4b-2507](https://lmstudio.ai/models/qwen/qwen3-4b-2507)
 
 ## Summary
 
@@ -14,7 +14,7 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## LLM Studio Parameters
 
-- Context length: 32767
+- Context length: 32768
 - GPU offload: 36/36
 - CPU thread pool: 9
 - Evaluation batch size: 512

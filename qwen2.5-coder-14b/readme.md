@@ -1,6 +1,6 @@
 # Model
 
-- [qwen/qwen2.5-coder-14b](https://lmstudio.ai/models/qwen/qwen2.5-coder-14b)
+> [qwen/qwen2.5-coder-14b](https://lmstudio.ai/models/qwen/qwen2.5-coder-14b)
 
 ## Summary
 
@@ -8,7 +8,7 @@ Qwen2.5-Coder is the latest series of Code-Specific Qwen large language models (
 
 - Significantly improvements in code generation, code reasoning and code fixing. Base on the strong Qwen2.5, we scale up the training tokens into 5.5 trillion including source code, text-code grounding, Synthetic data, etc. Qwen2.5-Coder-32B has become the current state-of-the-art open-source codeLLM, with its coding abilities matching those of GPT-4o.
 - A more comprehensive foundation for real-world applications such as Code Agents. Not only enhancing coding capabilities but also maintaining its strengths in mathematics and general competencies.
-- Long-context Support up to 128K tokens.
+- Long-context support up to 128K tokens.
 
 ## Highlights
 

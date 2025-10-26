@@ -1,6 +1,6 @@
 # Model
 
-- [qwen/qwen3-4b-thinking-2507](https://lmstudio.ai/models/qwen/qwen3-4b-thinking-2507)
+> [qwen/qwen3-4b-thinking-2507](https://lmstudio.ai/models/qwen/qwen3-4b-thinking-2507)
 
 ## Summary
 
@@ -10,7 +10,7 @@ Significantly improved performance on reasoning tasks, including logical reasoni
 
 Supports a context length of up to 262,144 tokens.
 
-> Note: This model supports only thinking mode. Specifying enable_thinking=True is not required.
+> Note: This model supports only thinking mode. Specifying `enable_thinking=True` is not required.
 
 ## LLM Studio Parameters
 

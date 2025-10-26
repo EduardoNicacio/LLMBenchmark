@@ -1,6 +1,6 @@
 # Model
 
-- [ibm/granite-4-h-tiny](https://huggingface.co/ibm-granite/granite-4.0-h-tiny)
+> [ibm/granite-4-h-tiny](https://huggingface.co/ibm-granite/granite-4.0-h-tiny)
 
 ## Summary
 
@@ -49,4 +49,4 @@
     Given the complexity of this task, I'll provide an overview and key components for each part rather than full files due to length constraints. Each section will include comments explaining its purpose.
     ```
 
-- Model didn't provide a folder structure for the C# code, that's why every artifact is in the same folder/level.
+- Model didn't provide a folder structure for the C# code, that's why every artifact can be found at the same level/folder.
