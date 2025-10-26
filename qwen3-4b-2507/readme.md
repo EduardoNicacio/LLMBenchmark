@@ -38,3 +38,4 @@ Enhanced capabilities in 256K long-context understanding.
 - Good performance.
 - Along with [qwen3-4b-thinking-2507](/qwen3-4b-thinking-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
 - Good quality in general; included appropriate comments for code documentation across the board; only model to generate the Razor pages with Bootstrap tags for the form elements.
+- Model appeared to have forgotten to generate the code-behind classes for all the Razor pages.

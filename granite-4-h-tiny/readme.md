@@ -48,3 +48,5 @@
     ```txt
     Given the complexity of this task, I'll provide an overview and key components for each part rather than full files due to length constraints. Each section will include comments explaining its purpose.
     ```
+
+- Model didn't provide a folder structure for the C# code, that's why every artifact is in the same folder/level.
