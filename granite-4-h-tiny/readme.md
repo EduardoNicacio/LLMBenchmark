@@ -35,10 +35,16 @@
 
 ## Performance
 
-- Thought for: 0min1s
-- Tokens per second: 24.93
+- Thought for: 0.2s / 0.2s
+- Tokens per second: 131.65 / 147.68
 
 ## Observations
 
 - Didn't create each stored procedure on its own code block as instructed.
 - Simplistic, broken stored procedures - cannot be compiled.
+- Repeated the SQL prompt with a refined version and it performed very well!
+- Even though it didn't create all the required C# code, at least it provided a justification:
+
+    ```txt
+    Given the complexity of this task, I'll provide an overview and key components for each part rather than full files due to length constraints. Each section will include comments explaining its purpose.
+    ```

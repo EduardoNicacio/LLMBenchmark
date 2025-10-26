@@ -1,13 +1,35 @@
-CREATE PROCEDURE usp_[Entity]RetrieveForList
-BEGIN TRY
-    SELECT ActivityId, Name FROM [dbo].[Activity]
-    WHERE SystemDeleteFlag <> 'Y' AND ActiveFlag = 1; -- Assuming these columns exist in the table definition
-END TRY
-BEGIN CATCH
-    INSERT INTO [dbo].[DbError] (
-        ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage
-    )
-    SELECT 
-        ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_LINE(),
-        ERROR_MESSAGE();
-END CATCH;
+CREATE PROCEDURE usp_ActivityRetrieveForList AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT * FROM sysobjects WHERE name='usp_ActivityRetrieveForList' AND xtype='PC')
+        EXEC('DROP PROCEDURE usp_ActivityRetrieveForList');
+
+    CREATE PROC usp_ActivityRetrieveForList AS
+
+    BEGIN TRY
+        SELECT ActivityId, Name
+        FROM [dbo].[Activity]
+        WHERE ActiveFlag = 1 AND SystemDeleteFlag <> 'Y';
+
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        DECLARE @ErrorSeverity INT;
+        DECLARE @ErrorState INT;
+
+        SELECT 
+            @ErrorMessage = ERROR_MESSAGE(),
+            @ErrorSeverity = ERROR_SEVERITY(),
+            @ErrorState = ERROR_STATE();
+
+        EXEC msdb.dbo.sp_send_dbmail
+            @profile_name = 'YourProfileName',
+            @recipients = 'your@email.com',
+            @subject = 'Error in usp_ActivityRetrieveForList',
+            @body = 'An error occurred: ' + @ErrorMessage;
+
+        RAISERROR('Error occurred during retrieve for list operation.', 16, 1);
+    END CATCH;
+END;
+GO
