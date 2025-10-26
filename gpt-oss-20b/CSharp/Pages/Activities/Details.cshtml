@@ -1,0 +1,15 @@
+@page "{id:guid}"
+@model MyApp.Pages.Activities.DetailsModel
+@{
+    ViewData["Title"] = "Activity Details";
+}
+
+<h2>Activity Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>Name</th><td>@Model.Activity.Name</td></tr>
+    <tr><th>Description</th><td>@Model.Activity.Description</td></tr>
+    <!-- Add other fields as needed -->
+</table>
+
+<a asp-page="Index" class="btn btn-secondary">Back to List</a>

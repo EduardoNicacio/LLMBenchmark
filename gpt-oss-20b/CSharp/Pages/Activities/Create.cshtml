@@ -1,0 +1,22 @@
+@page
+@model MyApp.Pages.Activities.CreateModel
+@{
+    ViewData["Title"] = "Create Activity";
+}
+
+<h2>Create Activity</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Activity.ProjectId"></label>
+        <input asp-for="Activity.ProjectId" class="form-control" />
+        <span asp-validation-for="Activity.ProjectId" class="text-danger"></span>
+    </div>
+    <!-- Repeat for each field; omitted for brevity -->
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

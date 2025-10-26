@@ -1,0 +1,39 @@
+@page
+@model MyApp.Pages.Activities.IndexModel
+@{
+    ViewData["Title"] = "Activities";
+}
+
+<h2>Activities</h2>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">Create New Activity</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Start Date</th>
+            <th>Target Date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Activities)
+{
+    <tr>
+        <td>@item.Name</td>
+        <td>@(item.StartDate?.ToShortDateString() ?? "-")</td>
+        <td>@(item.TargetDate?.ToShortDateString() ?? "-")</td>
+        <td>@(item.ProgressStatus.HasValue ? item.ProgressStatus.Value.ToString() : "N/A")</td>
+        <td>
+            <a asp-page="Details" asp-route-id="@item.ActivityId">Details</a> |
+            <a asp-page="Edit" asp-route-id="@item.ActivityId">Edit</a> |
+            <a asp-page="Delete" asp-route-id="@item.ActivityId">Delete</a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>

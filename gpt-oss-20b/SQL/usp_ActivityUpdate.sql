@@ -23,7 +23,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_ActivityUpdate
     @Tags              nvarchar(200) = NULL,
 
     @ActiveFlag        tinyint,                -- NOT NULL
-    @SystemDeleteFlag  char(1),                 -- NOT NULL
+    @SystemDeleteFlag  char(1),                -- NOT NULL
 
     @UpdatedDateTime   datetime2(7) = NULL,
     @UpdatedByUser     nvarchar(100) = NULL,

@@ -24,7 +24,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_ActivityRetrieve
 
     /* Flags – default values are used for filtering */
     @ActiveFlag        tinyint           = 1,      -- default to active
-    @SystemDeleteFlag  char(1)            = 'N',    -- default to non‑deleted
+    @SystemDeleteFlag  char(1)           = 'N',    -- default to non‑deleted
 
     /* Audit columns – not part of the search criteria */
     @CreatedDateTime   datetime2(7)       = NULL,
