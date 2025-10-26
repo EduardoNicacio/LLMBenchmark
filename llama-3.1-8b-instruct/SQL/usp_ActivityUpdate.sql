@@ -1,19 +1,18 @@
 -- usp_ActivityUpdate
-CREATE PROCEDURE usp_ActivityUpdate
+CREATE PROCEDURE [dbo].[usp_ActivityUpdate]
     @ActivityId UNIQUEIDENTIFIER,
     @ProjectId UNIQUEIDENTIFIER,
     @ProjectMemberId UNIQUEIDENTIFIER,
     @Name NVARCHAR(128),
     @Description NVARCHAR(4000),
-    @StartDate DATE,
-    @TargetDate DATE,
-    @EndDate DATE,
-    @ProgressStatus TINYINT,
-    @ActivityPoints SMALLINT,
-    @Priority TINYINT,
-    @Risk TINYINT,
-    @Tags NVARCHAR(200),
-    @ActiveFlag TINYINT = NULL,
+    @StartDate DATE = NULL,
+    @TargetDate DATE = NULL,
+    @EndDate DATE = NULL,
+    @ProgressStatus TINYINT = NULL,
+    @ActivityPoints SMALLINT = NULL,
+    @Priority TINYINT = NULL,
+    @Risk TINYINT = NULL,
+    @Tags NVARCHAR(200) = NULL,
     @UpdatedDateTime DATETIME2(7) = NULL,
     @UpdatedByUser NVARCHAR(100) = NULL,
     @UpdatedByProgram NVARCHAR(100) = NULL,
@@ -22,58 +21,46 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    IF @ActivityId IS NULL RAISERROR('50001', 16, 1);
-    IF LEN(@Name) > 128 RAISERROR('50002', 16, 1);
-    IF LEN(@Description) > 4000 RAISERROR('50002', 16, 1);
-    IF LEN(@Tags) > 200 RAISERROR('50002', 16, 1);
-    IF (LEN(@ProjectId) != 36 OR @ProjectMemberId IS NULL OR LEN(@ProjectMemberId) != 36 OR
-       LEN(@UpdatedByUser) > 100 OR LEN(@UpdatedByProgram) > 100 OR
-       (@ActiveFlag IS NOT NULL AND (@ActiveFlag != 1)))
-    RAISERROR('50003', 16, 1);
-
     BEGIN TRY
+        IF (@ActivityId IS NULL)
+            RAISERROR('Parameter ActivityId cannot be null.', 16, 1);
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Activity] WHERE ActivityId = @ActivityId AND SystemDeleteFlag <> 'Y')
+            RAISERROR('Activity not found or already deleted.', 16, 1);
+
+        IF (@SystemTimestamp IS NULL OR CONVERT(TIMESTAMP, @SystemTimestamp) < GETDATE())
+            RAISERROR('Optimistic lock failure: Another user has updated this Activity.', 16, 1);
+
         UPDATE [dbo].[Activity]
-        SET 
-            ActivityId = @ActivityId,
-            ProjectId = @ProjectId,
-            ProjectMemberId = @ProjectMemberId,
-            Name = @Name,
-            Description = @Description,
-            StartDate = @StartDate,
-            TargetDate = @TargetDate,
-            EndDate = @EndDate,
-            ProgressStatus = @ProgressStatus,
-            ActivityPoints = @ActivityPoints,
-            Priority = @Priority,
-            Risk = @Risk,
-            Tags = @Tags,
-            ActiveFlag = COALESCE(@ActiveFlag, (SELECT ActiveFlag FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
-            UpdatedDateTime = COALESCE(@UpdatedDateTime, SYSUTCDATETIME()),
-            UpdatedByUser = COALESCE(@UpdatedByUser, SYSTEM_USER),
-            UpdatedByProgram = COALESCE(@UpdatedByProgram, APP_NAME())
+        SET
+            ProjectId = IIF(@ProjectId IS NOT NULL AND (@ProjectId <> (SELECT ProjectId FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)), @ProjectId, (SELECT ProjectId FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            ProjectMemberId = IIF(@ProjectMemberId IS NOT NULL AND (@ProjectMemberId <> (SELECT ProjectMemberId FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)), @ProjectMemberId, (SELECT ProjectMemberId FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            Name = IIF(@Name IS NOT NULL AND LEN(@Name) <= 128, @Name, (SELECT Name FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            Description = IIF(@Description IS NOT NULL AND LEN(@Description) <= 4000, @Description, (SELECT Description FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            StartDate = IIF(@StartDate IS NOT NULL, @StartDate, (SELECT StartDate FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            TargetDate = IIF(@TargetDate IS NOT NULL, @TargetDate, (SELECT TargetDate FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            EndDate = IIF(@EndDate IS NOT NULL, @EndDate, (SELECT EndDate FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            ProgressStatus = IIF(@ProgressStatus IS NOT NULL AND (@ProgressStatus <> (SELECT ProgressStatus FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)), @ProgressStatus, (SELECT ProgressStatus FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            ActivityPoints = IIF(@ActivityPoints IS NOT NULL AND (@ActivityPoints <> (SELECT ActivityPoints FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)), @ActivityPoints, (SELECT ActivityPoints FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            Priority = IIF(@Priority IS NOT NULL AND (@Priority <> (SELECT Priority FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)), @Priority, (SELECT Priority FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            Risk = IIF(@Risk IS NOT NULL AND (@Risk <> (SELECT Risk FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)), @Risk, (SELECT Risk FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            Tags = IIF(@Tags IS NOT NULL AND LEN(@Tags) <= 200, @Tags, (SELECT Tags FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            ActiveFlag = IIF(@ActiveFlag IS NOT NULL, @ActiveFlag, (SELECT ActiveFlag FROM [dbo].[Activity] WHERE ActivityId = @ActivityId)),
+            UpdatedDateTime = IIF(@UpdatedDateTime IS NULL, SYSUTCDATETIME(), @UpdatedDateTime),
+            UpdatedByUser = IIF(@UpdatedByUser IS NULL, SYSTEM_USER, @UpdatedByUser),
+            UpdatedByProgram = IIF(@UpdatedByProgram IS NULL, APP_NAME(), @UpdatedByProgram)
         WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
     END TRY
     BEGIN CATCH
-        INSERT INTO [dbo].[DbError] (
-            ErrorNumber,
-            ErrorSeverity,
-            ErrorState,
-            ErrorProcedure,
-            ErrorLine,
-            ErrorMessage
-        )
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
-        IF EXISTS (SELECT 1 FROM [dbo].[Activity] WHERE ActivityId = @ActivityId AND SystemTimestamp != @SystemTimestamp)
-        RAISERROR('50004', 16, 1);
-        ELSE
-        RAISERROR('50000', 16, 1, 'Error occurred during UPDATE operation.');
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        SET @ErrorMessage = 'Error occurred during Update operation.';
+        INSERT INTO [dbo].[DbError] (ErrorMessage, ErrorDate) VALUES (@ErrorMessage, SYSUTCDATETIME());
+
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+
+        RAISERROR(@ErrorMessage, 16, 1);
+
     END CATCH;
-END
+END;
 GO

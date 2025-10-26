@@ -16,7 +16,7 @@ Model Architecture: Llama 3.1 is an auto-regressive language model that uses an 
 
 ## LLM Studio Parameters
 
-- Context length: 8192
+- Context length: 16384
 - GPU offload: 32/32
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -32,14 +32,14 @@ Model Architecture: Llama 3.1 is an auto-regressive language model that uses an 
 
 ## Performance
 
-- Thought for: ~ 0.6s
-- Tokens per second: 95.40
+- Thought for: ~0.6s / ~0.4s
+- Tokens per second: 94.72 / 96.67
 
 ## Observations
 
-Didn't follow the explicit instruction to create each stored procedure in a separate block of code.
-Didn't add the default schema [dbo] to the stored procedure names.
-Included examples about how to call these stored procedures, as follows:
+- Didn't follow the explicit instruction to create each stored procedure in a separate block of code.
+- Didn't add the default schema [dbo] to the stored procedure names.
+- Included examples about how to call these stored procedures, as follows:
 
 ```sql
 -- You can now use these stored procedures in your database
@@ -85,5 +85,3 @@ EXEC usp_ActivityDelete
 
 EXEC usp_ActivityRetrieveForList;
 ```
-
-Nice. :-)

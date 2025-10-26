@@ -1,34 +1,30 @@
 -- usp_ActivityRetrieveForList
-CREATE PROCEDURE usp_ActivityRetrieveForList
+CREATE PROCEDURE [dbo].[usp_ActivityRetrieveForList]
 AS
 BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        SELECT 
-            ActivityId,
-            Name
-        FROM [dbo].[Activity]
-        WHERE ActiveFlag = 1 AND SystemDeleteFlag = 'N';
+        SELECT ActivityId, Name FROM (
+            SELECT
+                ActivityId,
+                Name,
+                ROW_NUMBER() OVER (ORDER BY CreatedDateTime DESC) AS RowNumber
+            FROM [dbo].[Activity]
+            WHERE ActiveFlag = 1 AND SystemDeleteFlag <> 'Y'
+        ) AS Subquery
+        WHERE RowNumber <= 100;
 
     END TRY
     BEGIN CATCH
-        INSERT INTO [dbo].[DbError] (
-            ErrorNumber,
-            ErrorSeverity,
-            ErrorState,
-            ErrorProcedure,
-            ErrorLine,
-            ErrorMessage
-        )
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
-        RAISERROR('50000', 16, 1, 'Error occurred during RETRIEVE FOR LIST operation.');
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        SET @ErrorMessage = 'Error occurred during Retrieve operation.';
+        INSERT INTO [dbo].[DbError] (ErrorMessage, ErrorDate) VALUES (@ErrorMessage, SYSUTCDATETIME());
+
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+
+        RAISERROR(@ErrorMessage, 16, 1);
+
     END CATCH;
-END
+END;
 GO

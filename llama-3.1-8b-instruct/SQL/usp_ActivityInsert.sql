@@ -1,36 +1,52 @@
 -- usp_ActivityInsert
-CREATE PROCEDURE usp_ActivityInsert
+CREATE PROCEDURE [dbo].[usp_ActivityInsert]
     @ActivityId UNIQUEIDENTIFIER,
     @ProjectId UNIQUEIDENTIFIER,
     @ProjectMemberId UNIQUEIDENTIFIER,
     @Name NVARCHAR(128),
     @Description NVARCHAR(4000),
-    @StartDate DATE,
-    @TargetDate DATE,
-    @EndDate DATE,
-    @ProgressStatus TINYINT,
-    @ActivityPoints SMALLINT,
-    @Priority TINYINT,
-    @Risk TINYINT,
-    @Tags NVARCHAR(200),
-    @ActiveFlag TINYINT = NULL,
-    @CreatedByUser NVARCHAR(100),
-    @CreatedByProgram NVARCHAR(100),
-    @CreatedDateTime DATETIME2(7) = SYSUTCDATETIME()
+    @StartDate DATE = NULL,
+    @TargetDate DATE = NULL,
+    @EndDate DATE = NULL,
+    @ProgressStatus TINYINT = NULL,
+    @ActivityPoints SMALLINT = NULL,
+    @Priority TINYINT = NULL,
+    @Risk TINYINT = NULL,
+    @Tags NVARCHAR(200) = NULL,
+    @ActiveFlag TINYINT = 1,
+    @SystemDeleteFlag CHAR(1) = 'N',
+    @CreatedDateTime DATETIME2(7) = SYSUTCDATETIME(),
+    @CreatedByUser NVARCHAR(100) = SYSTEM_USER,
+    @CreatedByProgram NVARCHAR(100) = APP_NAME()
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    IF @ActivityId IS NULL RAISERROR('50001', 16, 1);
-    IF LEN(@Name) > 128 RAISERROR('50002', 16, 1);
-    IF LEN(@Description) > 4000 RAISERROR('50002', 16, 1);
-    IF LEN(@Tags) > 200 RAISERROR('50002', 16, 1);
-    IF (LEN(@ProjectId) != 36 OR @ProjectMemberId IS NULL OR LEN(@ProjectMemberId) != 36 OR
-       LEN(@CreatedByUser) > 100 OR LEN(@CreatedByProgram) > 100 OR
-       (@ActiveFlag IS NOT NULL AND (@ActiveFlag != 1)))
-    RAISERROR('50003', 16, 1);
-
     BEGIN TRY
+        IF (@ActivityId IS NULL)
+            RAISERROR('Parameter ActivityId cannot be null.', 16, 1);
+
+        IF (@ProjectId IS NULL)
+            RAISERROR('Parameter ProjectId cannot be null.', 16, 1);
+
+        IF (@ProjectMemberId IS NULL)
+            RAISERROR('Parameter ProjectMemberId cannot be null.', 16, 1);
+
+        IF (LEN(@Name) > 128)
+            RAISERROR('String parameter Name exceeds column length of 128.', 16, 1);
+
+        IF (LEN(@Description) > 4000)
+            RAISERROR('String parameter Description exceeds column length of 4000.', 16, 1);
+
+        IF (LEN(@Tags) > 200)
+            RAISERROR('String parameter Tags exceeds column length of 200.', 16, 1);
+
+        IF (@ActiveFlag NOT IN (0, 1))
+            RAISERROR('Invalid value for ActiveFlag. Please specify 0 or 1.', 16, 1);
+
+        IF (@SystemDeleteFlag NOT IN ('N', 'Y'))
+            RAISERROR('Invalid value for SystemDeleteFlag. Please specify ''N'' or ''Y''.', 16, 1);
+
         INSERT INTO [dbo].[Activity] (
             ActivityId,
             ProjectId,
@@ -46,9 +62,10 @@ BEGIN
             Risk,
             Tags,
             ActiveFlag,
+            SystemDeleteFlag,
+            CreatedDateTime,
             CreatedByUser,
-            CreatedByProgram,
-            CreatedDateTime
+            CreatedByProgram
         )
         VALUES (
             @ActivityId,
@@ -65,29 +82,22 @@ BEGIN
             @Risk,
             @Tags,
             @ActiveFlag,
+            @SystemDeleteFlag,
+            @CreatedDateTime,
             @CreatedByUser,
-            @CreatedByProgram,
-            @CreatedDateTime
+            @CreatedByProgram
         );
 
     END TRY
     BEGIN CATCH
-        INSERT INTO [dbo].[DbError] (
-            ErrorNumber,
-            ErrorSeverity,
-            ErrorState,
-            ErrorProcedure,
-            ErrorLine,
-            ErrorMessage
-        )
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
-        RAISERROR('50000', 16, 1, 'Error occurred during INSERT operation.');
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        SET @ErrorMessage = 'Error occurred during Insert operation.';
+        INSERT INTO [dbo].[DbError] (ErrorMessage, ErrorDate) VALUES (@ErrorMessage, SYSUTCDATETIME());
+
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+
+        RAISERROR(@ErrorMessage, 16, 1);
+
     END CATCH;
-END
+END;
 GO

@@ -1,0 +1,52 @@
+@page
+@model YourNamespace.ViewModels.CreateViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create Activity</h2>
+
+<iform method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div>
+        <label asp-for="ProjectId"></label>
+        <input asp-for="ProjectId" />
+        <span asp-validation-for="ProjectId" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="ProjectMemberId"></label>
+        <input asp-for="ProjectMemberId" />
+        <span asp-validation-for="ProjectMemberId" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Description"></label>
+        <input asp-for="Description" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="StartDate"></label>
+        <input type="date" asp-for="StartDate" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="TargetDate"></label>
+        <input type="date" asp-for="TargetDate" />
+        <span asp-validation-for="TargetDate" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="EndDate"></label>
+        <input type="date" asp-for="EndDate" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+    <button type="submit">Create</button>
+</iform>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
