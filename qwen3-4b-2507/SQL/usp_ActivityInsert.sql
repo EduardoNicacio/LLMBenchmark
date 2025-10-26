@@ -5,17 +5,16 @@ CREATE PROCEDURE usp_ActivityInsert
     @ProjectMemberId UNIQUEIDENTIFIER,
     @Name NVARCHAR(128),
     @Description NVARCHAR(4000),
-    @StartDate DATE = NULL,
-    @TargetDate DATE = NULL,
-    @EndDate DATE = NULL,
-    @ProgressStatus TINYINT = NULL,
-    @ActivityPoints SMALLINT = NULL,
-    @Priority TINYINT = NULL,
-    @Risk TINYINT = NULL,
-    @Tags NVARCHAR(200) = NULL,
-    @ActiveFlag TINYINT = NULL,
-    @SystemDeleteFlag CHAR(1) = NULL,
-    @CreatedDateTime DATETIME2(7),
+    @StartDate DATE,
+    @TargetDate DATE,
+    @EndDate DATE,
+    @ProgressStatus TINYINT,
+    @ActivityPoints SMALLINT,
+    @Priority TINYINT,
+    @Risk TINYINT,
+    @Tags NVARCHAR(200),
+    @ActiveFlag TINYINT,
+    @SystemDeleteFlag CHAR(1),
     @CreatedByUser NVARCHAR(100),
     @CreatedByProgram NVARCHAR(100)
 AS
@@ -23,47 +22,41 @@ BEGIN
     SET NOCOUNT ON;
 
     -- Validate input parameters
-    IF @ActivityId IS NULL
-        RAISERROR('50001', 16, 1, 'ActivityId') RETURN;
+    IF @ActivityId IS NULL OR @ProjectId IS NULL OR @ProjectMemberId IS NULL OR @CreatedByUser IS NULL OR @CreatedByProgram IS NULL
+    BEGIN
+        RAISERROR('50001', 16, 1, 'Null parameter detected in usp_ActivityInsert');
+        RETURN;
+    END
 
-    IF @ProjectId IS NULL
-        RAISERROR('50001', 16, 1, 'ProjectId') RETURN;
+    IF @Name IS NOT NULL AND LEN(@Name) > 128
+    BEGIN
+        RAISERROR('50002', 16, 1, 'Name exceeds maximum length of 128 characters');
+        RETURN;
+    END
 
-    IF @ProjectMemberId IS NULL
-        RAISERROR('50001', 16, 1, 'ProjectMemberId') RETURN;
-
-    IF @Name IS NULL OR LEN(@Name) > 128
-        RAISERROR('50002', 16, 1, 'Name', 128) RETURN;
-
-    IF @Description IS NULL OR LEN(@Description) > 4000
-        RAISERROR('50002', 16, 1, 'Description', 4000) RETURN;
-
-    IF @StartDate IS NOT NULL AND @StartDate > CAST('9999-12-31' AS DATE)
-        RAISERROR('50002', 16, 1, 'StartDate', 9999) RETURN;
-
-    IF @TargetDate IS NOT NULL AND @TargetDate > CAST('9999-12-31' AS DATE)
-        RAISERROR('50002', 16, 1, 'TargetDate', 9999) RETURN;
-
-    IF @EndDate IS NOT NULL AND @EndDate > CAST('9999-12-31' AS DATE)
-        RAISERROR('50002', 16, 1, 'EndDate', 9999) RETURN;
+    IF @Description IS NOT NULL AND LEN(@Description) > 4000
+    BEGIN
+        RAISERROR('50002', 16, 1, 'Description exceeds maximum length of 4000 characters');
+        RETURN;
+    END
 
     IF @Tags IS NOT NULL AND LEN(@Tags) > 200
-        RAISERROR('50002', 16, 1, 'Tags', 200) RETURN;
+    BEGIN
+        RAISERROR('50002', 16, 1, 'Tags exceeds maximum length of 200 characters');
+        RETURN;
+    END
 
-    IF @ActiveFlag IS NOT NULL AND (@ActiveFlag != 0 AND @ActiveFlag != 1)
-        RAISERROR('50003', 16, 1, 'ActiveFlag') RETURN;
+    IF @ActiveFlag NOT IN (0, 1)
+    BEGIN
+        RAISERROR('50003', 16, 1, 'Invalid ActiveFlag value. Must be 0 or 1.');
+        RETURN;
+    END
 
-    IF @SystemDeleteFlag IS NOT NULL AND (@SystemDeleteFlag != 'N' AND @SystemDeleteFlag != 'Y')
-        RAISERROR('50003', 16, 1, 'SystemDeleteFlag') RETURN;
-
-    IF @CreatedDateTime IS NULL
-        RAISERROR('50001', 16, 1, 'CreatedDateTime') RETURN;
-
-    IF @CreatedByUser IS NULL OR LEN(@CreatedByUser) > 100
-        RAISERROR('50002', 16, 1, 'CreatedByUser', 100) RETURN;
-
-    IF @CreatedByProgram IS NULL OR LEN(@CreatedByProgram) > 100
-        RAISERROR('50002', 16, 1, 'CreatedByProgram', 100) RETURN;
+    IF @SystemDeleteFlag NOT IN ('N', 'Y')
+    BEGIN
+        RAISERROR('50003', 16, 1, 'Invalid SystemDeleteFlag value. Must be ''N'' or ''Y''.');
+        RETURN;
+    END
 
     BEGIN TRY
         INSERT INTO [dbo].[Activity] (
@@ -100,30 +93,21 @@ BEGIN
             @Priority,
             @Risk,
             @Tags,
-            ISNULL(@ActiveFlag, 1),
-            ISNULL(@SystemDeleteFlag, 'N'),
-            @CreatedDateTime,
+            @ActiveFlag,
+            @SystemDeleteFlag,
+            SYSUTCDATETIME(),
             @CreatedByUser,
             @CreatedByProgram
         );
+
+        RETURN 0;
     END TRY
     BEGIN CATCH
-        INSERT INTO [dbo].[DbError] (
-            ErrorNumber,
-            ErrorSeverity,
-            ErrorState,
-            ErrorProcedure,
-            ErrorLine,
-            ErrorMessage
-        )
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
-        RETURN;
+        INSERT INTO dbo.DbError (ErrorMessage, Operation, ErrorNumber, ErrorSeverity, ErrorState, ErrorLine, ErrorProcedure)
+        VALUES (ERROR_MESSAGE(), 'INSERT', ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_LINE(), ERROR_PROCEDURE());
+
+        RAISERROR('50000', 16, 1, 'Error occurred during INSERT operation.');
+        RETURN -1;
     END CATCH
 END
 GO

@@ -1,0 +1,40 @@
+// Razor Pages: Index.cshtml
+@page
+@model ListActivityViewModel
+@{
+    ViewData["Title"] = "Activity List";
+}
+
+<h2>Activity List</h2>
+
+<a asp-page="Create" class="btn btn-primary mb-3">Create New</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Project</th>
+            <th>Member</th>
+            <th>Start Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ActivityId</td>
+                <td>@item.Name</td>
+                <td>@item.ProjectId</td>
+                <td>@item.ProjectMemberId</td>
+                <td>@item.StartDate?.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@item.ActivityId" class="btn btn-info btn-sm">Details</a>
+                    <a asp-page="Edit" asp-route-id="@item.ActivityId" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@item.ActivityId" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

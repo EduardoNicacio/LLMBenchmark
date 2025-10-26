@@ -1,0 +1,29 @@
+// Razor Pages: Details.cshtml
+@page "{id:guid}"
+@model ListActivityViewModel
+@{
+    ViewData["Title"] = "Activity Details";
+}
+
+<h2>Activity Details</h2>
+
+<div>
+    <p><strong>ID:</strong> @Model.ActivityId</p>
+    <p><strong>Project:</strong> @Model.ProjectId</p>
+    <p><strong>Member:</strong> @Model.ProjectMemberId</p>
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>Description:</strong> @Model.Description</p>
+    <p><strong>Start Date:</strong> @Model.StartDate?.ToString("yyyy-MM-dd")</p>
+    <p><strong>Target Date:</strong> @Model.TargetDate?.ToString("yyyy-MM-dd")</p>
+    <p><strong>End Date:</strong> @Model.EndDate?.ToString("yyyy-MM-dd")</p>
+    <p><strong>Progress:</strong> @Model.ProgressStatus</p>
+    <p><strong>Points:</strong> @Model.ActivityPoints</p>
+    <p><strong>Priority:</strong> @Model.Priority</p>
+    <p><strong>Risk:</strong> @Model.Risk</p>
+    <p><strong>Tags:</strong> @Model.Tags</p>
+    <p><strong>Active:</strong> @Model.IsActive</p>
+    <p><strong>Created:</strong> @Model.CreatedDateTime.ToString("yyyy-MM-dd HH:mm")</p>
+    <p><strong>Updated:</strong> @Model.UpdatedDateTime?.ToString("yyyy-MM-dd HH:mm")</p>
+</div>
+
+<a asp-page="Index" class="btn btn-secondary">Back to List</a>

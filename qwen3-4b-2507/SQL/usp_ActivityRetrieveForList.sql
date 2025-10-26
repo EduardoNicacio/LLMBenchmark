@@ -10,26 +10,17 @@ BEGIN
             [Name]
         FROM [dbo].[Activity]
         WHERE 
-            [SystemDeleteFlag] = 'N'
-            AND [ActiveFlag] = 1;
+            [ActiveFlag] = 1 
+            AND [SystemDeleteFlag] <> 'Y';
+
+        RETURN 0;
     END TRY
     BEGIN CATCH
-        INSERT INTO [dbo].[DbError] (
-            ErrorNumber,
-            ErrorSeverity,
-            ErrorState,
-            ErrorProcedure,
-            ErrorLine,
-            ErrorMessage
-        )
-        SELECT 
-            ERROR_NUMBER() AS ErrorNumber,
-            ERROR_SEVERITY() AS ErrorSeverity,
-            ERROR_STATE() AS ErrorState,
-            ERROR_PROCEDURE() AS ErrorProcedure,
-            ERROR_LINE() AS ErrorLine,
-            ERROR_MESSAGE() AS ErrorMessage;
-        RETURN;
+        INSERT INTO dbo.DbError (ErrorMessage, Operation, ErrorNumber, ErrorSeverity, ErrorState, ErrorLine, ErrorProcedure)
+        VALUES (ERROR_MESSAGE(), 'RETRIEVEFORLIST', ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_LINE(), ERROR_PROCEDURE());
+
+        RAISERROR('50000', 16, 1, 'Error occurred during RETRIEVEFORLIST operation.');
+        RETURN -1;
     END CATCH
 END
 GO

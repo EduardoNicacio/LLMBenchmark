@@ -14,7 +14,7 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## LLM Studio Parameters
 
-- Context length: 8192
+- Context length: 32767
 - GPU offload: 36/36
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -30,10 +30,11 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## Performance
 
-- Thought for: 0min1s
-- Tokens per second: 134.40
+- Thought for: 0.2s / 0.2s
+- Tokens per second: 135.84 / 117.54
 
 ## Observations
 
-Good performance.
-Along with [qwen3-4b-thinking-2507](/qwen3-4b-thinking-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
+- Good performance.
+- Along with [qwen3-4b-thinking-2507](/qwen3-4b-thinking-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
+- Good quality in general; included appropriate comments for code documentation across the board; only model to generate the Razor pages with Bootstrap tags for the form elements.
