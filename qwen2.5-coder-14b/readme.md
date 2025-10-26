@@ -27,7 +27,7 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 
 ## LLM Studio Parameters
 
-- Context length: 8192
+- Context length: 16384
 - GPU offload: 48/48
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -44,8 +44,10 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 ## Performance
 
 - Thought for: 0min1s
-- Tokens per second: 55.47
+- Tokens per second: 54.51
 
 ## Observations
 
-Same output quality of qwen3-4b-2507, but almost three times slower.
+- Same output quality of qwen3-4b-2507, but almost three times slower.
+- Didn't create each stored procued into a single code block as requested.
+- I needed to manually request the code generation for some missing pages (`Edit`, `Details`, `Delete`, and `Index`), as well as the missing repository methods `GetByIdAsync()`, `AddAsync()`, `Update()` and `Delete()` as defined in the interface IGenericRepository. Not all the methods defined in this interface have been implemented in the (`IQueryable<T> GetAll()` vs `Task<List<ReadActivityDto>> GetAllAsync()`).

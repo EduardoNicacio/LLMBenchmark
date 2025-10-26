@@ -1,0 +1,24 @@
+@page "{id:guid}"
+@model ActivityManagement.Pages.EditModel
+
+<h1>Edit Activity</h1>
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Activity.ActivityId" />
+    <div class="form-group">
+        <label asp-for="Activity.Name"></label>
+        <input asp-for="Activity.Name" class="form-control" />
+        <span asp-validation-for="Activity.Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Activity.Description"></label>
+        <textarea asp-for="Activity.Description" class="form-control"></textarea>
+        <span asp-validation-for="Activity.Description" class="text-danger"></span>
+    </div>
+    <!-- Add other fields similarly -->
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
