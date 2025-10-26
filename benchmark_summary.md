@@ -1,6 +1,6 @@
 # Benchmark summary
 
-## servicenow-ai/apriel-1.5-15b-thinker:
+## servicenow-ai/apriel-1.5-15b-thinker
 
 - Differently from other "thinking" or "reasoning" models, it displays its chain of thought directly in the LM Studio chat output.
 - It included a nice documentation at the header of each stored procedure, and split them all into separate code blocks as asked.
@@ -10,7 +10,7 @@
 - The model generated tons of C# code. However, when outputting the latest classes after a long thought, it ran out of context/memory and could not proceed. A 24/32GB video card may help with that.
 - The model spent over 2h of GPU time writing C# code and fine-tunning it. I've aborted the execution on the final step, when the model was about to display its final answer. On a second attempt I let the model run loose and, after 4 hours of thinking/planning, it crashed.
 
-## google/codegemma-7b:
+## google/codegemma-7b
 
 - Strange results, like the model not generating anything at 153,846 tokens per second; or hallucinating by affirming that using python with an ORM would be better than running the requested stored procedures.
 - Other times, the model generates garbage like below until it crashes:
@@ -23,7 +23,7 @@
     -- usp_ActivityRetrieveForList 501f84e3-726d - d9aebcbecfbdbfaeabebbdcfdcabdcfe -- Description: Retrieve Activity record for list. Input parameters include all columns except Updat edDateTim e, UpdatedByUser ,UpdatedByProgram .
     ```
 
-## mistralai/codestral-22b-v0.1:
+## mistralai/codestral-22b-v0.1
 
 - Didn't validate the input parameters as instructed.
 - Didn't include the main statements within a try...catch block as instructed.
@@ -247,7 +247,7 @@ EXEC usp_ActivityRetrieveForList;
 - Good performance.
 - Along with [qwen3-4b-thinking-2507](/qwen3-4b-thinking-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
 - Good quality in general; included appropriate comments for code documentation across the board; only model to generate the Razor pages with Bootstrap tags for the form elements.
-- Model appeared to have forgotten to generate the code-behind classes for all the Razor pages.
+- Model appeared to have forgotten to generate the PageModels for all the Razor pages.
 
 ## qwen/qwen3-4b-thinking-2507
 
