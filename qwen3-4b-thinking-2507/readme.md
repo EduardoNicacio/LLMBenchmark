@@ -1,6 +1,6 @@
 # Model
 
-- qwen/qwen3-4b-thinking-2507
+- [qwen/qwen3-4b-thinking-2507](https://lmstudio.ai/models/qwen/qwen3-4b-thinking-2507)
 
 ## Summary
 
@@ -35,12 +35,14 @@ Supports a context length of up to 262,144 tokens.
 
 ## Observations
 
-Good performance. Most comprehensive source code.
-Along with [qwen3-4b-2507](/qwen3-4b-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
-Model didn't create all the required C# code, but gave me some tips as follows:
+- Good performance. Most comprehensive source code.
+- Along with [qwen3-4b-2507](/qwen3-4b-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
+- Model didn't create all the required C# code, but gave me some tips as follows:
 
+    ```txt
     File: Pages/Activities/Edit.cshtml (Structure similar to Create, with @model UpdateActivityViewModel)
     File: Pages/Activities/Details.cshtml (Structure: @model ReadActivityDto)
     File: Pages/Activities/Delete.cshtml (Structure: Confirmation form with @model Guid)
 
-    > Note: Razor Pages use Model Binding and ASP.NET Core validation. All pages include proper error handling and form submission.
+    Note: Razor Pages use Model Binding and ASP.NET Core validation. All pages include proper error handling and form submission.
+    ```

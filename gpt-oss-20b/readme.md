@@ -1,6 +1,6 @@
 # Model
 
-- [openai/gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
+[openai/gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
 
 ## Summary
 

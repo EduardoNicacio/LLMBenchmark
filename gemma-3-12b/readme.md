@@ -1,6 +1,6 @@
 # Model
 
-- google/gemma-3-12b
+- [google/gemma-3-12b](https://lmstudio.ai/models/google/gemma-3-12b)
 
 ## Summary
 
