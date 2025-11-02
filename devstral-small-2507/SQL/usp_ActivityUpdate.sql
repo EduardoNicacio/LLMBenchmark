@@ -1,83 +1,98 @@
--- usp_ActivityUpdate  
-CREATE PROCEDURE dbo.usp_ActivityUpdate
-(
-    @ActivityId UNIQUEIDENTIFIER,
-    @ProjectId UNIQUEIDENTIFIER,
-    @ProjectMemberId UNIQUEIDENTIFIER,
-    @Name NVARCHAR(128),
-    @Description NVARCHAR(4000) = NULL,
-    @StartDate DATE = NULL,
-    @TargetDate DATE = NULL,
-    @EndDate DATE = NULL,
-    @ProgressStatus TINYINT = NULL,
-    @ActivityPoints SMALLINT = NULL,
-    @Priority TINYINT = NULL,
-    @Risk TINYINT = NULL,
-    @Tags NVARCHAR(200) = NULL,
-    @ActiveFlag TINYINT,
-    @SystemDeleteFlag CHAR(1),
-    @UpdatedDateTime DATETIME2(7) = NULL,
-    @UpdatedByUser NVARCHAR(100) = NULL,
-    @UpdatedByProgram NVARCHAR(100) = NULL,
-    @SystemTimestamp VARBINARY(8)
-)
+CREATE PROCEDURE [dbo].[usp_ActivityUpdate]
+    @ActivityId uniqueidentifier,
+    @ProjectId uniqueidentifier,
+    @ProjectMemberId uniqueidentifier,
+    @Name nvarchar(128),
+    @Description nvarchar(4000),
+    @StartDate date = NULL,
+    @TargetDate date = NULL,
+    @EndDate date = NULL,
+    @ProgressStatus tinyint = NULL,
+    @ActivityPoints smallint = NULL,
+    @Priority tinyint = NULL,
+    @Risk tinyint = NULL,
+    @Tags nvarchar(200) = NULL,
+    @ActiveFlag tinyint,
+    @SystemDeleteFlag char(1),
+    @UpdatedDateTime datetime2(7) = NULL,
+    @UpdatedByUser nvarchar(100) = NULL,
+    @UpdatedByProgram nvarchar(100) = NULL,
+    @SystemTimestamp varbinary(8)
 AS
 BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        -- Input validation
-        IF dbo.CheckInputParameter(@ActivityId, NULL, 0, 'ActivityId') = 1 RETURN;
-        IF dbo.CheckInputParameter(@ProjectId, NULL, 0, 'ProjectId') = 1 RETURN;
-        IF dbo.CheckInputParameter(@ProjectMemberId, NULL, 0, 'ProjectMemberId') = 1 RETURN;
-        IF dbo.CheckInputParameter(@Name, NULL, 0, 'Name') = 1 RETURN;
+        -- Validate input parameters
+        IF @ActivityId IS NULL OR @ProjectId IS NULL OR @ProjectMemberId IS NULL OR 
+           @Name IS NULL OR @Description IS NULL OR @ActiveFlag IS NULL OR @SystemDeleteFlag IS NULL OR @SystemTimestamp IS NULL
+        BEGIN
+            RAISERROR('Required parameter is null.', 16, 50001);
+            RETURN;
+        END
 
-        IF @UpdatedDateTime IS NULL SET @UpdatedDateTime = SYSUTCDATETIME();
-        IF @UpdatedByUser IS NULL SET @UpdatedByUser = SYSTEM_USER;
-        IF @UpdatedByProgram IS NULL SET @UpdatedByProgram = APP_NAME();
+        IF LEN(@Name) > 128 OR LEN(@Description) > 4000 OR LEN(@Tags) > 200 OR 
+           (@UpdatedByUser IS NOT NULL AND LEN(@UpdatedByUser) > 100) OR 
+           (@UpdatedByProgram IS NOT NULL AND LEN(@UpdatedByProgram) > 100)
+        BEGIN
+            RAISERROR('String parameter exceeds column length.', 16, 50002);
+            RETURN;
+        END
 
-        DECLARE @CurrentSystemTimestamp VARBINARY(8);
+        IF @ActiveFlag NOT IN (0, 1)
+        BEGIN
+            RAISERROR('Invalid ActiveFlag value. Must be 0 or 1.', 16, 50003);
+            RETURN;
+        END
 
-        -- Check for optimistic locking violation
-        SELECT @CurrentSystemTimestamp = [SystemTimestamp]
-        FROM [dbo].[Activity] WITH (UPDLOCK)
-        WHERE [ActivityId] = @ActivityId AND [SystemDeleteFlag] = 'N';
+        IF @SystemDeleteFlag NOT IN ('N', 'Y')
+        BEGIN
+            RAISERROR('Invalid SystemDeleteFlag value. Must be ''N'' or ''Y''.', 16, 50003);
+            RETURN;
+        END
 
-        IF @CurrentSystemTimestamp IS NULL
-            RAISERROR('Activity not found or already deleted.', 16, 50004);
+        -- Default values if not provided
+        IF @UpdatedDateTime IS NULL THEN SET @UpdatedDateTime = SYSUTCDATETIME();
+        IF @UpdatedByUser IS NULL THEN SET @UpdatedByUser = SYSTEM_USER;
+        IF @UpdatedByProgram IS NULL THEN SET @UpdatedByProgram = APP_NAME();
 
-        IF @CurrentSystemTimestamp <> @SystemTimestamp
-            RAISERROR('Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.', 16, 50004);
-
+        -- Update the activity record with optimistic locking
         UPDATE [dbo].[Activity]
-        SET [ProjectId] = @ProjectId,
-            [ProjectMemberId] = @ProjectMemberId,
-            [Name] = @Name,
-            [Description] = @Description,
-            [StartDate] = @StartDate,
-            [TargetDate] = @TargetDate,
-            [EndDate] = @EndDate,
-            [ProgressStatus] = @ProgressStatus,
-            [ActivityPoints] = @ActivityPoints,
-            [Priority] = @Priority,
-            [Risk] = @Risk,
-            [Tags] = @Tags,
-            [ActiveFlag] = @ActiveFlag,
-            [SystemDeleteFlag] = @SystemDeleteFlag,
-            [UpdatedDateTime] = @UpdatedDateTime,
-            [UpdatedByUser] = @UpdatedByUser,
-            [UpdatedByProgram] = @UpdatedByProgram
-        WHERE [ActivityId] = @ActivityId AND [SystemTimestamp] = @SystemTimestamp;
+        SET ProjectId = @ProjectId,
+            ProjectMemberId = @ProjectMemberId,
+            Name = @Name,
+            Description = @Description,
+            StartDate = @StartDate,
+            TargetDate = @TargetDate,
+            EndDate = @EndDate,
+            ProgressStatus = @ProgressStatus,
+            ActivityPoints = @ActivityPoints,
+            Priority = @Priority,
+            Risk = @Risk,
+            Tags = @Tags,
+            ActiveFlag = @ActiveFlag,
+            SystemDeleteFlag = @SystemDeleteFlag,
+            UpdatedDateTime = @UpdatedDateTime,
+            UpdatedByUser = @UpdatedByUser,
+            UpdatedByProgram = @UpdatedByProgram
+        WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
+        IF @@ROWCOUNT = 0
+        BEGIN
+            RAISERROR('Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.', 16, 50004);
+            RETURN;
+        END
     END TRY
     BEGIN CATCH
+        -- Log error to dbo.DbError table
         DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
         DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
         DECLARE @ErrorState INT = ERROR_STATE();
 
-        EXEC dbo.LogError @ErrorMessage, @ErrorSeverity, @ErrorState, 'usp_ActivityUpdate';
+        INSERT INTO dbo.DbError (ErrorTime, ErrorMessage, ErrorSeverity, ErrorState)
+        VALUES (GETDATE(), @ErrorMessage, @ErrorSeverity, @ErrorState);
 
-        RAISERROR('Error occurred during Activity update operation.', 16, 50000);
+        RAISERROR('Error occurred during update operation.', 16, 50000);
     END CATCH
-END
+END;
 GO

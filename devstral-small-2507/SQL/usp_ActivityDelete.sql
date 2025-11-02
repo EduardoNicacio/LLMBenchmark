@@ -1,52 +1,50 @@
--- usp_ActivityDelete  
-CREATE PROCEDURE dbo.usp_ActivityDelete
-(
-    @ActivityId UNIQUEIDENTIFIER,
-    @UpdatedDateTime DATETIME2(7) = NULL,
-    @UpdatedByUser NVARCHAR(100) = NULL,
-    @UpdatedByProgram NVARCHAR(100) = NULL,
-    @SystemTimestamp VARBINARY(8)
-)
+CREATE PROCEDURE [dbo].[usp_ActivityDelete]
+    @ActivityId uniqueidentifier,
+    @UpdatedDateTime datetime2(7) = NULL,
+    @UpdatedByUser nvarchar(100) = NULL,
+    @UpdatedByProgram nvarchar(100) = NULL,
+    @SystemTimestamp varbinary(8)
 AS
 BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        -- Input validation
-        IF dbo.CheckInputParameter(@ActivityId, NULL, 0, 'ActivityId') = 1 RETURN;
-        IF @UpdatedDateTime IS NULL SET @UpdatedDateTime = SYSUTCDATETIME();
-        IF @UpdatedByUser IS NULL SET @UpdatedByUser = SYSTEM_USER;
-        IF @UpdatedByProgram IS NULL SET @UpdatedByProgram = APP_NAME();
+        -- Validate input parameters
+        IF @ActivityId IS NULL OR @SystemTimestamp IS NULL
+        BEGIN
+            RAISERROR('Required parameter is null.', 16, 50001);
+            RETURN;
+        END
 
-        DECLARE @CurrentSystemTimestamp VARBINARY(8);
+        -- Default values if not provided
+        IF @UpdatedDateTime IS NULL THEN SET @UpdatedDateTime = SYSUTCDATETIME();
+        IF @UpdatedByUser IS NULL THEN SET @UpdatedByUser = SYSTEM_USER;
+        IF @UpdatedByProgram IS NULL THEN SET @UpdatedByProgram = APP_NAME();
 
-        -- Check for optimistic locking violation
-        SELECT @CurrentSystemTimestamp = [SystemTimestamp]
-        FROM [dbo].[Activity] WITH (UPDLOCK)
-        WHERE [ActivityId] = @ActivityId AND [SystemDeleteFlag] = 'N';
-
-        IF @CurrentSystemTimestamp IS NULL
-            RAISERROR('Activity not found or already deleted.', 16, 50004);
-
-        IF @CurrentSystemTimestamp <> @SystemTimestamp
-            RAISERROR('Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.', 16, 50004);
-
+        -- Soft-delete the activity record
         UPDATE [dbo].[Activity]
-        SET [SystemDeleteFlag] = 'Y',
-            [UpdatedDateTime] = @UpdatedDateTime,
-            [UpdatedByUser] = @UpdatedByUser,
-            [UpdatedByProgram] = @UpdatedByProgram
-        WHERE [ActivityId] = @ActivityId AND [SystemTimestamp] = @SystemTimestamp;
+        SET SystemDeleteFlag = 'Y',
+            UpdatedDateTime = @UpdatedDateTime,
+            UpdatedByUser = @UpdatedByUser,
+            UpdatedByProgram = @UpdatedByProgram
+        WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
+        IF @@ROWCOUNT = 0
+        BEGIN
+            RAISERROR('Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.', 16, 50004);
+            RETURN;
+        END
     END TRY
     BEGIN CATCH
+        -- Log error to dbo.DbError table
         DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
         DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
         DECLARE @ErrorState INT = ERROR_STATE();
 
-        EXEC dbo.LogError @ErrorMessage, @ErrorSeverity, @ErrorState, 'usp_ActivityDelete';
+        INSERT INTO dbo.DbError (ErrorTime, ErrorMessage, ErrorSeverity, ErrorState)
+        VALUES (GETDATE(), @ErrorMessage, @ErrorSeverity, @ErrorState);
 
-        RAISERROR('Error occurred during Activity delete operation.', 16, 50000);
+        RAISERROR('Error occurred during delete operation.', 16, 50000);
     END CATCH
-END
+END;
 GO
