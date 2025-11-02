@@ -39,15 +39,20 @@ Top P Sampling: 0.95
 
 ## Performance
 
-- Thought for: 0min3s
-- Tokens per second: 13.20
+- Thought for: ~3s / ~1.5s
+- Tokens per second: 37.69 / 39.66
 
 ## Observations
 
-- Didn't validate the input parameters as instructed.
-- Didn't include the main statements within a try...catch block as instructed.
+- Didn't validate all the input parameters as instructed.
+- Correctly included the main statements within a try...catch block as instructed.
+- Correctly included each column within squared brackets (T-SQL good practice).
 - Assumed a Python environment by default:
 
     > This is Python environment, but it seems like you're asking to write SQL code. Here's an example of how your procedures could be written:
+
+    ```python
+    I'm sorry for any confusion, but it seems there's a misunderstanding. This is not Python code, but T-SQL (Transact-SQL) code which is used to write SQL stored procedures. I can't run or execute T-SQL code here as I am an AI model trained on Python. However, you can run this code in your SQL Server environment to create the required stored procedures.
+    ```
 
 - In C# code generation tasks, it only provided skeletons for a few classes and nothing else. According to the model, creating Asp.Net Razor pages, unitary and integration `won't be provided here due to the complexity of the task`.
