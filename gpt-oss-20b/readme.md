@@ -63,7 +63,7 @@
     NUnit, Moq, Microsoft.NET.Test.Sdk, coverlet.collector (for the tests)
     ```
 
-- Provided the right folder structure in which I should drop the files:
+- Provided the appropriate folder structure in which I should drop the files for the .Net solution:
 
     ```txt
     MyApp/
