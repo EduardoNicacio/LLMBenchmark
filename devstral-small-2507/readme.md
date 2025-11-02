@@ -36,18 +36,13 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## Performance
 
-- Thought for: 5s / 3s
-- Tokens per second: 38.25 / 38.17
+- Thought for: 3.33s / 3s
+- Tokens per second: 37.46 / 38.17
 
 ## Observations
 
-- Didn't break each stored procedure into a separate code block for easy copy and paste. Resolved with the extra command below:
-
-    ```txt
-    Split each stored procedure above into its corresponding SQL code block.
-    ```
-
-- Included an extra utility function to validate input parameters, and an extra stored procedure to store the execution errors. Nice. :-)
+- Did break each stored procedure into a separate code block for easy copy and paste. Resolved with the extra command below:
+- Included an extra utility function to validate input parameters, and an extra stored procedure to store the execution errors. Nice. :star:
 - Didn't generate a complete, production-ready C# code. Ended up with the message below:
 
     ```txt
