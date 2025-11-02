@@ -29,6 +29,14 @@ In addition to these, there's also <|file_separator|>, which is used to provide 
 
 Please, make sure to not provide any extra spaces or newlines around the tokens, other than those that would naturally occur in the code fragment you want to complete.
 
+## Model Inference Parameters
+
+Temperature: 0.8
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 8192

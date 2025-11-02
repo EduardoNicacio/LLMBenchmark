@@ -12,6 +12,14 @@ Enhanced capabilities in 256K long-context understanding.
 
 > Note: This model supports only non-thinking mode and does not generate `<think></think>` blocks in its output.
 
+## Model Inference Parameters
+
+Temperature: 0.6
+Top K Sampling: 20
+Repeat Penalty: off
+Min P Sampling: 0.0
+Top P Sampling: 0.8
+
 ## LLM Studio Parameters
 
 - Context length: 32768

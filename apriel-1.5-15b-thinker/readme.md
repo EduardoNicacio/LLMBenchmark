@@ -13,6 +13,14 @@
 - Scores 68 on Tau2 Bench Telecom and 62 on IFBench, which are key benchmarks for the enterprise domain.
 - At 15B parameters, the model fits on a single GPU, making it highly memory-efficient.
 
+## Model Inference Parameters
+
+Temperature: 0.1
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 8192

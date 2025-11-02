@@ -15,9 +15,17 @@
 - Agentic capabilities: Use the models’ native capabilities for function calling, web browsing, Python code execution, and Structured Outputs.
 - MXFP4 quantization: The models were post-trained with MXFP4 quantization of the MoE weights, making gpt-oss-120b run on a single 80GB GPU (like NVIDIA H100 or AMD MI300X) and the gpt-oss-20b model run within 16GB of memory. All evals were performed with the same MXFP4 quantization.
 
+## Model Inference Parameters
+
+Temperature: 0.6
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.8
+
 ## LLM Studio Parameters
 
-- Context length: 4096 / 8192
+- Context length: 16384
 - GPU offload: 24/24
 - CPU thread pool: 9
 - Evaluation batch size: 512

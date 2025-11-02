@@ -8,6 +8,14 @@ We present **DeepSeek-Coder-V2**, an open-source Mixture-of-Experts (MoE) code l
 
 In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performance compared to closed-source models such as GPT4-Turbo, Claude 3 Opus, and Gemini 1.5 Pro in coding and math benchmarks. The list of supported programming languages can be found at [supported langs](https://github.com/deepseek-ai/DeepSeek-Coder-V2/blob/main/supported_langs.txt).
 
+## Model Inference Parameters
+
+Temperature: 0.6
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 8192

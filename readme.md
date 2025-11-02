@@ -357,7 +357,7 @@ When it comes to run LLMs locally, choosing the right model for a given task is 
 
 With all that said, choosing the right model for the tasks above allowed me to refactor an old Asp.Net project of mine as follows:
 
-- Data layer: 20h (SQL Server 2022 db with 67 tables and 146 stored procedures, totaling 17,000 lines of code).
+- Data layer: 20h (SQL Server 2022 db with 67 tables and 146 stored procedures, totalling 17,000 lines of code).
 - C# Models: TBD
 - C# DTOs: TBD
 - C# ViewModels: TBD

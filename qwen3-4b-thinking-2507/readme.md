@@ -12,6 +12,14 @@ Supports a context length of up to 262,144 tokens.
 
 > Note: This model supports only thinking mode. Specifying `enable_thinking=True` is not required.
 
+## Model Inference Parameters
+
+Temperature: 0.8
+Top K Sampling: 20
+Repeat Penalty: off
+Min P Sampling: 0.0
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 32768

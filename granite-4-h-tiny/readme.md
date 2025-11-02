@@ -15,6 +15,14 @@
 - Release Date: October 2nd, 2025
 - License: Apache 2.0
 
+## Model Inference Parameters
+
+Temperature: 0.6
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 8192

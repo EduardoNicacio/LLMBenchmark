@@ -19,6 +19,14 @@
   - Generated text in response to the input, such as an answer to a question, analysis of image content, or a summary of a document
   - Total output context of 8192 tokens.
 
+## Model Inference Parameters
+
+Temperature: 0.5
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 8192

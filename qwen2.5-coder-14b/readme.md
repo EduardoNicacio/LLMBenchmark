@@ -25,6 +25,14 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 - Note: Currently, only vLLM supports YARN for length extrapolating. If you want to process sequences up to 131,072 tokens, please refer to non-GGUF models.
 - Quantization: q2_K, q3_K_M, q4_0, **q4_K_M**, q5_0, q5_K_M, q6_K, q8_0
 
+## Model Inference Parameters
+
+Temperature: 0.5
+Top K Sampling: 40
+Repeat Penalty: 1.1
+Min P Sampling: 0.05
+Top P Sampling: 0.95
+
 ## LLM Studio Parameters
 
 - Context length: 16384
