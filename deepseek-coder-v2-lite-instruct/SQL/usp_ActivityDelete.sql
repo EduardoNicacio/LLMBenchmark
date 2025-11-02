@@ -1,27 +1,32 @@
--- Stored Procedure for Delete Operation
 CREATE PROCEDURE [dbo].[usp_ActivityDelete]
     @ActivityId uniqueidentifier,
-    @UpdatedDateTime datetime2(7) = NULL,
-    @UpdatedByUser nvarchar(100) = NULL,
-    @UpdatedByProgram nvarchar(100) = NULL,
+    @UpdatedDateTime datetime2(7) = NULL OUTPUT,
+    @UpdatedByUser nvarchar(100) = NULL OUTPUT,
+    @UpdatedByProgram nvarchar(100) = NULL OUTPUT,
     @SystemTimestamp timestamp
 AS
 BEGIN TRY
-    UPDATE [dbo].[Activity] 
-    SET SystemDeleteFlag = 'Y', UpdatedDateTime = ISNULL(@UpdatedDateTime, SYSUTCDATETIME()), UpdatedByUser = SYSTEM_USER, UpdatedByProgram = APP_NAME(), SystemTimestamp = @SystemTimestamp
-    WHERE ActivityId = @ActivityId AND SystemDeleteFlag <> 'Y' AND SystemTimestamp = @SystemTimestamp;
-    
-    IF @@ROWCOUNT = 0
-    BEGIN
-        RAISERROR('50004', 16, 1, 'Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.');
-    END
+    IF @ActivityId IS NULL OR (@UpdatedDateTime IS NOT NULL AND @UpdatedByUser IS NOT NULL AND @UpdatedByProgram IS NOT NULL AND @SystemTimestamp IS NOT NULL)
+        RAISERROR('50001', 16, 1) -- Null parameter error
+
+    SELECT @UpdatedDateTime = SYSUTCDATETIME(), @UpdatedByUser = SYSTEM_USER, @UpdatedByProgram = APP_NAME() WHERE @UpdatedDateTime IS NULL OR @UpdatedByUser IS NULL OR @UpdatedByProgram IS NULL;
+
+    DECLARE @CurrentSystemTimestamp timestamp;
+    SELECT @CurrentSystemTimestamp = SystemTimestamp FROM [dbo].[Activity] WHERE ActivityId = @ActivityId;
+
+    IF @CurrentSystemTimestamp != @SystemTimestamp
+        RAISERROR('50004', 16, 1) -- Optimistic lock violation
+
+    UPDATE [dbo].[Activity] SET
+        SystemDeleteFlag = 'Y',
+        UpdatedDateTime = @UpdatedDateTime,
+        UpdatedByUser = @UpdatedByUser,
+        UpdatedByProgram = @UpdatedByProgram
+    WHERE ActivityId = @ActivityId;
 END TRY
 BEGIN CATCH
-    INSERT INTO [dbo].[DbError] (
-        ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage
-    )
-    SELECT 
-        ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE();
-    RAISERROR('50001', 16, 1); -- Raise error 50001 for null parameters.
-END CATCH;
-GO
+    IF ERROR_NUMBER() = 50001 OR ERROR_NUMBER() = 50004
+        RAISERROR('Error occurred during delete operation.', 16, 1);
+    ELSE
+        EXEC dbo.usp_LogError; -- Assuming this procedure logs errors to DbError table
+END CATCH

@@ -31,11 +31,11 @@ Please, make sure to not provide any extra spaces or newlines around the tokens,
 
 ## Model Inference Parameters
 
-Temperature: 0.8
-Top K Sampling: 40
-Repeat Penalty: 1.1
-Min P Sampling: 0.05
-Top P Sampling: 0.95
+- Temperature: 0.8
+- Top K Sampling: 40
+- Repeat Penalty: 1.1
+- Min P Sampling: 0.05
+- Top P Sampling: 0.95
 
 ## LLM Studio Parameters
 

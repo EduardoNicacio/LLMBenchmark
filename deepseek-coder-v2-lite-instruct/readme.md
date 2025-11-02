@@ -10,11 +10,11 @@ In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performan
 
 ## Model Inference Parameters
 
-Temperature: 0.6
-Top K Sampling: 40
-Repeat Penalty: 1.1
-Min P Sampling: 0.05
-Top P Sampling: 0.95
+- Temperature: 0.6
+- Top K Sampling: 40
+- Repeat Penalty: 1.1
+- Min P Sampling: 0.05
+- Top P Sampling: 0.95
 
 ## LLM Studio Parameters
 
@@ -37,11 +37,11 @@ Top P Sampling: 0.95
 ## Performance
 
 - Thought for: 0.2s / 0.2s
-- Tokens per second: 148.78 / 146.11
+- Tokens per second: 101.19 / 146.11
 
 ## Observations
 
-- Didn't include any parameter validation (error codes 50001, 50002, 50003) as required.
+- Didn't include input parameter validation (error codes 50001, 50002, 50003) for all the stored procedures as required.
 - Used error code 50003 within the try...catch block, which should be used to validate the flag parameters (ActiveFlag, SystemDeleteFlag).
 - Didn't follow the instructions to generate production-ready C# code. Here's the message this model provided at the end of the task:
 

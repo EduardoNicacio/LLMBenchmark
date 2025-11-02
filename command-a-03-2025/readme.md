@@ -14,11 +14,11 @@ While I strive to be as helpful as possible, I must adhere to ethical guidelines
 
 ## Model Inference Parameters
 
-Temperature: n/a
-Top K Sampling: n/a
-Repeat Penalty: n/a
-Min P Sampling: n/a
-Top P Sampling: n/a
+- Temperature: n/a
+- Top K Sampling: n/a
+- Repeat Penalty: n/a
+- Min P Sampling: n/a
+- Top P Sampling: n/a
 
 ## LLM Studio Parameters
 

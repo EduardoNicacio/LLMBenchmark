@@ -14,11 +14,11 @@ Supports a context length of up to 262,144 tokens.
 
 ## Model Inference Parameters
 
-Temperature: 0.8
-Top K Sampling: 20
-Repeat Penalty: off
-Min P Sampling: 0.0
-Top P Sampling: 0.95
+- Temperature: 0.8
+- Top K Sampling: 20
+- Repeat Penalty: off
+- Min P Sampling: 0.0
+- Top P Sampling: 0.95
 
 ## LLM Studio Parameters
 
