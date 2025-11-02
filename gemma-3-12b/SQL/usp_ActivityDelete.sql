@@ -10,32 +10,33 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Input Validation
-    IF @ActivityId IS NULL
-        RAISERROR (50001, 16, 1, 'Parameter @ActivityId cannot be null.');
-
-	IF @UpdatedDateTime IS NULL
-		RAISERROR(50001, 16, 1, "Parameter @UpdatedDateTime cannot be null.");
+    -- Validate Input Parameters
+    IF @ActivityId IS NULL RAISERROR (50001, 16, 1, 'ActivityId')
+    IF @UpdatedDateTime IS NULL RAISERROR (50001, 16, 1, 'UpdatedDateTime')
+    IF LEN(@UpdatedByUser) > 100 RAISERROR (50002, 16, 1, 'UpdatedByUser')
+    IF LEN(@UpdatedByProgram) > 100 RAISERROR (50002, 16, 1, 'UpdatedByProgram')
 
     BEGIN TRY
         UPDATE [dbo].[Activity]
-        SET
-            SystemDeleteFlag = 'Y',
+        SET SystemDeleteFlag = 'Y',
             UpdatedDateTime = ISNULL(@UpdatedDateTime, SYSUTCDATETIME()),
             UpdatedByUser = ISNULL(@UpdatedByUser, SYSTEM_USER),
             UpdatedByProgram = ISNULL(@UpdatedByProgram, APP_NAME())
-        WHERE
-            ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
+        WHERE ActivityId = @ActivityId
+          AND SystemTimestamp = @SystemTimestamp;
 
-		IF @@ROWCOUNT = 0
-			RAISERROR(50004,16,1,"Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.");
     END TRY
     BEGIN CATCH
-        IF ERROR_NUMBER() <> 0
-            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
-            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+        -- Log Error
+        IF ERROR_NUMBER() = 2627 -- Optimistic Lock Violation (Concurrency Failure)
+            RAISERROR (50004, 16, 1, 'Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.')
+        ELSE
+            INSERT INTO dbo.DbError (ErrorTime, ApplicationName, ProcedureName, ErrorMessage)
+            VALUES (GETDATE(), 'ActivityDelete', 'usp_ActivityDelete', ERROR_MESSAGE());
 
-        RAISERROR (50000, 16, 1, 'Error occurred during ActivityDelete operation.');
-    END CATCH;
+        -- Raise Error
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityDelete operation.')
+        RETURN;
+    END CATCH
 END;
 GO

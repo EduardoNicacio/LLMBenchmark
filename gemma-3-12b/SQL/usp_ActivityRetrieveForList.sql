@@ -9,16 +9,18 @@ BEGIN
             ActivityId,
             Name
         FROM [dbo].[Activity]
-        WHERE
-            ActiveFlag = 1 AND SystemDeleteFlag <> 'Y';
+        WHERE ActiveFlag = 1
+          AND SystemDeleteFlag <> 'Y';
 
     END TRY
     BEGIN CATCH
-        IF ERROR_NUMBER() <> 0
-            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
-            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+        -- Log Error
+        INSERT INTO dbo.DbError (ErrorTime, ApplicationName, ProcedureName, ErrorMessage)
+        VALUES (GETDATE(), 'ActivityRetrieveForList', 'usp_ActivityRetrieveForList', ERROR_MESSAGE());
 
-        RAISERROR (50000, 16, 1, 'Error occurred during ActivityRetrieveForList operation.');
-    END CATCH;
+        -- Raise Error
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityRetrieveForList operation.')
+        RETURN;
+    END CATCH
 END;
 GO

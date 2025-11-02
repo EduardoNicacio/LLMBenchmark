@@ -39,8 +39,8 @@ More details and benchmark information can be found on their blogpost here:
 
 ## Performance
 
-- Thought for: ~3s / ~1.5s
-- Tokens per second: 37.69 / 39.66
+- Thought for/first token after: ~3s / ~1.5s
+- Tokens per second (T-SQL/C#): 37.69 / 39.66
 
 ## Observations
 

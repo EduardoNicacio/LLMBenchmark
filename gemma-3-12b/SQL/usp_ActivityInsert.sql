@@ -12,28 +12,29 @@ CREATE PROCEDURE [dbo].[usp_ActivityInsert] (
     @Priority tinyint = NULL,
     @Risk tinyint = NULL,
     @Tags nvarchar(200) = NULL,
-    @ActiveFlag tinyint = 1, -- Default to active
-    @SystemDeleteFlag char(1) = 'N', -- Default to not deleted
-    @CreatedDateTime datetime2(7) = SYSUTCDATETIME(),
-    @CreatedByUser nvarchar(100) = SYSTEM_USER,
-    @CreatedByProgram nvarchar(100) = APP_NAME()
+    @ActiveFlag tinyint = NULL,
+    @SystemDeleteFlag char(1) = NULL,
+    @CreatedDateTime datetime2(7) = NULL,
+    @CreatedByUser nvarchar(100) = NULL,
+    @CreatedByProgram nvarchar(100) = NULL
 )
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Input Validation
-    IF @Name IS NULL
-        RAISERROR (50001, 16, 1, 'Parameter @Name cannot be null.');
-
-	IF LEN(@Name) > 128
-		RAISERROR(50002, 16, 1, "Parameter @Name exceeds maximum length of 128.");
-
-    IF @ActiveFlag IS NOT NULL AND (@ActiveFlag <> 0 AND @ActiveFlag <> 1)
-        RAISERROR (50003, 16, 1, 'Parameter @ActiveFlag must be 0 or 1.');
-
-    IF @SystemDeleteFlag IS NOT NULL AND (@SystemDeleteFlag <> 'N' AND @SystemDeleteFlag <> 'Y')
-        RAISERROR (50003, 16, 1, 'Parameter @SystemDeleteFlag must be ''N'' or ''Y''.');
+    -- Validate Input Parameters
+    IF @ProjectId IS NULL RAISERROR (50001, 16, 1, 'ProjectId')
+    IF @ProjectMemberId IS NULL RAISERROR (50001, 16, 1, 'ProjectMemberId')
+    IF @Name IS NULL RAISERROR (50001, 16, 1, 'Name')
+    IF LEN(@Name) > 128 RAISERROR (50002, 16, 1, 'Name')
+    IF @Description IS NULL RAISERROR (50001, 16, 1, 'Description')
+    IF @ActiveFlag IS NULL RAISERROR (50001, 16, 1, 'ActiveFlag')
+    IF @ActiveFlag NOT IN (0, 1) RAISERROR (50003, 16, 1, 'ActiveFlag')
+    IF @SystemDeleteFlag IS NULL RAISERROR (50001, 16, 1, 'SystemDeleteFlag')
+    IF @SystemDeleteFlag NOT IN ('N', 'Y') RAISERROR (50003, 16, 1, 'SystemDeleteFlag')
+    IF @CreatedDateTime IS NULL RAISERROR (50001, 16, 1, 'CreatedDateTime')
+    IF LEN(@CreatedByUser) > 100 RAISERROR (50002, 16, 1, 'CreatedByUser')
+    IF LEN(@CreatedByProgram) > 100 RAISERROR (50002, 16, 1, 'CreatedByProgram')
 
 
     BEGIN TRY
@@ -55,8 +56,7 @@ BEGIN
             CreatedDateTime,
             CreatedByUser,
             CreatedByProgram
-        )
-        VALUES (
+        ) VALUES (
             @ProjectId,
             @ProjectMemberId,
             @Name,
@@ -76,16 +76,15 @@ BEGIN
             @CreatedByProgram
         );
 
-		-- Return the ActivityId of newly inserted record.
-		SELECT SCOPE_IDENTITY();
-
     END TRY
     BEGIN CATCH
-        IF ERROR_NUMBER() <> 0
-            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
-            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+        -- Log Error
+        INSERT INTO dbo.DbError (ErrorTime, ApplicationName, ProcedureName, ErrorMessage)
+        VALUES (GETDATE(), 'ActivityInsert', 'usp_ActivityInsert', ERROR_MESSAGE());
 
-        RAISERROR (50000, 16, 1, 'Error occurred during ActivityInsert operation.');
-    END CATCH;
+        -- Raise Error
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityInsert operation.')
+        RETURN;
+    END CATCH
 END;
 GO

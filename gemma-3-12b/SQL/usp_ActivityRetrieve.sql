@@ -1,7 +1,7 @@
 -- usp_ActivityRetrieve
 CREATE PROCEDURE [dbo].[usp_ActivityRetrieve] (
     @ActivityId uniqueidentifier = NULL,
-	@ProjectId uniqueidentifier = NULL,
+    @ProjectId uniqueidentifier = NULL,
     @ProjectMemberId uniqueidentifier = NULL,
     @Name nvarchar(128) = NULL,
     @Description nvarchar(4000) = NULL,
@@ -13,20 +13,27 @@ CREATE PROCEDURE [dbo].[usp_ActivityRetrieve] (
     @Priority tinyint = NULL,
     @Risk tinyint = NULL,
     @Tags nvarchar(200) = NULL,
-    @ActiveFlag tinyint = 1, -- Default to active
-    @SystemDeleteFlag char(1) = 'N' -- Default to not deleted
+    @ActiveFlag tinyint = NULL,
+    @SystemDeleteFlag char(1) = NULL,
+    @CreatedDateTime datetime2(7) = NULL,
+    @CreatedByUser nvarchar(100) = NULL,
+    @CreatedByProgram nvarchar(100) = NULL,
+    @UpdatedDateTime datetime2(7) = NULL,
+    @UpdatedByUser nvarchar(100) = NULL,
+    @UpdatedByProgram nvarchar(100) = NULL
 )
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Input Validation
-    IF @ActiveFlag IS NOT NULL AND (@ActiveFlag <> 0 AND @ActiveFlag <> 1)
-        RAISERROR (50003, 16, 1, 'Parameter @ActiveFlag must be 0 or 1.');
+    -- Validate Input Parameters
+    IF @ActiveFlag IS NULL
+        SET @ActiveFlag = 1; -- Default to active records
+    IF @SystemDeleteFlag IS NULL
+        SET @SystemDeleteFlag = 'N'; -- Default to non-deleted records
 
-    IF @SystemDeleteFlag IS NOT NULL AND (@SystemDeleteFlag <> 'N' AND @SystemDeleteFlag <> 'Y')
-        RAISERROR (50003, 16, 1, 'Parameter @SystemDeleteFlag must be ''N'' or ''Y''.');
-
+    IF @ActiveFlag NOT IN (0, 1) RAISERROR (50003, 16, 1, 'ActiveFlag')
+    IF @SystemDeleteFlag NOT IN ('N', 'Y') RAISERROR (50003, 16, 1, 'SystemDeleteFlag')
 
     BEGIN TRY
         SELECT
@@ -53,30 +60,37 @@ BEGIN
             UpdatedByProgram,
             SystemTimestamp
         FROM [dbo].[Activity]
-        WHERE
-            ( @ActivityId IS NULL OR  CHARINDEX(@ActivityId, ActivityId, 0) > 0 )
-			AND ( @ProjectId IS NULL OR CHARINDEX(@ProjectId, ProjectId, 0) > 0 )
-			AND ( @ProjectMemberId IS NULL OR CHARINDEX(@ProjectMemberId, ProjectMemberId, 0) > 0 )
-            AND ( @Name IS NULL OR CHARINDEX(@Name, Name, 0) > 0 )
-            AND ( @Description IS NULL OR CHARINDEX(@Description, Description, 0) > 0 )
-            AND ( @StartDate IS NULL OR StartDate >= @StartDate AND StartDate < DATEADD(day, 1, @StartDate))
-            AND ( @TargetDate IS NULL OR TargetDate >= @TargetDate AND TargetDate < DATEADD(day, 1, @TargetDate))
-            AND ( @EndDate IS NULL OR EndDate >= @EndDate AND EndDate < DATEADD(day, 1, @EndDate))
-            AND ( @ProgressStatus IS NULL OR ProgressStatus = @ProgressStatus )
-            AND ( @ActivityPoints IS NULL OR ActivityPoints = @ActivityPoints )
-            AND ( @Priority IS NULL OR Priority = @Priority )
-            AND ( @Risk IS NULL OR Risk = @Risk )
-            AND ( @Tags IS NULL OR CHARINDEX(@Tags, Tags, 0) > 0 )
-            AND ActiveFlag = @ActiveFlag
-            AND SystemDeleteFlag = @SystemDeleteFlag;
+        WHERE ActiveFlag = @ActiveFlag
+          AND SystemDeleteFlag = @SystemDeleteFlag
+          AND (@ActivityId IS NULL OR ActivityId = @ActivityId)
+          AND (@ProjectId IS NULL OR ProjectId = @ProjectId)
+          AND (@ProjectMemberId IS NULL OR ProjectMemberId = @ProjectMemberId)
+          AND (@Name IS NULL OR (@Name IS NOT NULL AND CHARINDEX(@Name, Name, 0) > 0))
+          AND (@Description IS NULL OR (@Description IS NOT NULL AND CHARINDEX(@Description, Description, 0) > 0))
+          AND (@StartDate IS NULL OR StartDate >= @StartDate AND StartDate < DATEADD(day, 1, @StartDate))
+          AND (@TargetDate IS NULL OR TargetDate >= @TargetDate AND TargetDate < DATEADD(day, 1, @TargetDate))
+          AND (@EndDate IS NULL OR EndDate >= @EndDate AND EndDate < DATEADD(day, 1, @EndDate))
+          AND (@ProgressStatus IS NULL OR ProgressStatus = @ProgressStatus)
+          AND (@ActivityPoints IS NULL OR ActivityPoints = @ActivityPoints)
+          AND (@Priority IS NULL OR Priority = @Priority)
+          AND (@Risk IS NULL OR Risk = @Risk)
+          AND (@Tags IS NULL OR (@Tags IS NOT NULL AND CHARINDEX(@Tags, Tags, 0) > 0))
+          AND (@CreatedDateTime IS NULL OR CreatedDateTime = @CreatedDateTime)
+          AND (@CreatedByUser IS NULL OR CreatedByUser = @CreatedByUser)
+          AND (@CreatedByProgram IS NULL OR CreatedByProgram = @CreatedByProgram)
+          AND (@UpdatedDateTime IS NULL OR UpdatedDateTime = @UpdatedDateTime)
+          AND (@UpdatedByUser IS NULL OR UpdatedByUser = @UpdatedByUser)
+          AND (@UpdatedByProgram IS NULL OR UpdatedByProgram = @UpdatedByProgram);
 
     END TRY
     BEGIN CATCH
-        IF ERROR_NUMBER() <> 0
-            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
-            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+        -- Log Error
+        INSERT INTO dbo.DbError (ErrorTime, ApplicationName, ProcedureName, ErrorMessage)
+        VALUES (GETDATE(), 'ActivityRetrieve', 'usp_ActivityRetrieve', ERROR_MESSAGE());
 
-        RAISERROR (50000, 16, 1, 'Error occurred during ActivityRetrieve operation.');
-    END CATCH;
+        -- Raise Error
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityRetrieve operation.')
+        RETURN;
+    END CATCH
 END;
 GO

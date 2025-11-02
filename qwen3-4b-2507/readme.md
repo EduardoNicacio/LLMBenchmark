@@ -38,8 +38,8 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## Performance
 
-- Thought for: 0.2s / 0.2s
-- Tokens per second: 135.84 / 117.54
+- Thought for/first token after: 0.2s / 0.2s
+- Tokens per second (T-SQL/C#): 135.84 / 117.54
 
 ## Observations
 

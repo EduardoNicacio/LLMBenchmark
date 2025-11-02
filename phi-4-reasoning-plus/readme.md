@@ -41,8 +41,8 @@ Phi-4-reasoning-plus has been trained additionally with Reinforcement Learning, 
 
 ## Performance
 
-- Thought for: 4min12s / 4min27s
-- Tokens per second: 49.99 / 44.83
+- Thought for/first token after: 4min12s / 4min27s
+- Tokens per second (T-SQL/C#): 49.99 / 44.83
 
 ## Observations
 

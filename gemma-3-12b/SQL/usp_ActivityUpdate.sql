@@ -13,8 +13,7 @@ CREATE PROCEDURE [dbo].[usp_ActivityUpdate] (
     @Priority tinyint = NULL,
     @Risk tinyint = NULL,
     @Tags nvarchar(200) = NULL,
-    @ActiveFlag tinyint = 1, -- Default to active
-    @SystemDeleteFlag char(1) = 'N', -- Default to not deleted
+    @ActiveFlag tinyint = NULL,
     @UpdatedDateTime datetime2(7) = NULL,
     @UpdatedByUser nvarchar(100) = NULL,
     @UpdatedByProgram nvarchar(100) = NULL,
@@ -24,27 +23,19 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Input Validation
-    IF @ActivityId IS NULL
-        RAISERROR (50001, 16, 1, 'Parameter @ActivityId cannot be null.');
-
-	IF @UpdatedDateTime IS NULL
-		RAISERROR(50001, 16, 1, "Parameter @UpdatedDateTime cannot be null.");
-
-    IF LEN(@Name) > 128 AND @Name IS NOT NULL
-        RAISERROR (50002, 16, 1, 'Parameter @Name exceeds maximum length of 128.');
-
-    IF @ActiveFlag IS NOT NULL AND (@ActiveFlag <> 0 AND @ActiveFlag <> 1)
-        RAISERROR (50003, 16, 1, 'Parameter @ActiveFlag must be 0 or 1.');
-
-    IF @SystemDeleteFlag IS NOT NULL AND (@SystemDeleteFlag <> 'N' AND @SystemDeleteFlag <> 'Y')
-        RAISERROR (50003, 16, 1, 'Parameter @SystemDeleteFlag must be ''N'' or ''Y''.');
-
+    -- Validate Input Parameters
+    IF @ActivityId IS NULL RAISERROR (50001, 16, 1, 'ActivityId')
+    IF LEN(@Name) > 128 RAISERROR (50002, 16, 1, 'Name')
+    IF LEN(@UpdatedByUser) > 100 RAISERROR (50002, 16, 1, 'UpdatedByUser')
+    IF LEN(@UpdatedByProgram) > 100 RAISERROR (50002, 16, 1, 'UpdatedByProgram')
+    IF @ActiveFlag IS NULL RAISERROR (50001, 16, 1, 'ActiveFlag')
+    IF @ActiveFlag NOT IN (0, 1) RAISERROR (50003, 16, 1, 'ActiveFlag')
+    IF @SystemDeleteFlag IS NULL RAISERROR (50001, 16, 1, 'SystemDeleteFlag')
+    IF @SystemDeleteFlag NOT IN ('N', 'Y') RAISERROR (50003, 16, 1, 'SystemDeleteFlag')
 
     BEGIN TRY
         UPDATE [dbo].[Activity]
-        SET
-            ProjectId = ISNULL(@ProjectId, ProjectId),
+        SET ProjectId = ISNULL(@ProjectId, ProjectId),
             ProjectMemberId = ISNULL(@ProjectMemberId, ProjectMemberId),
             Name = ISNULL(@Name, Name),
             Description = ISNULL(@Description, Description),
@@ -57,23 +48,24 @@ BEGIN
             Risk = ISNULL(@Risk, Risk),
             Tags = ISNULL(@Tags, Tags),
             ActiveFlag = ISNULL(@ActiveFlag, ActiveFlag),
-            SystemDeleteFlag = ISNULL(@SystemDeleteFlag, SystemDeleteFlag),
             UpdatedDateTime = ISNULL(@UpdatedDateTime, SYSUTCDATETIME()),
             UpdatedByUser = ISNULL(@UpdatedByUser, SYSTEM_USER),
             UpdatedByProgram = ISNULL(@UpdatedByProgram, APP_NAME())
-        WHERE
-            ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
-
-		IF @@ROWCOUNT = 0
-			RAISERROR(50004,16,1,"Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.");
+        WHERE ActivityId = @ActivityId
+          AND SystemTimestamp = @SystemTimestamp;
 
     END TRY
     BEGIN CATCH
-        IF ERROR_NUMBER() <> 0
-            INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorMessage, ErrorDateTime)
-            VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+        -- Log Error
+        IF ERROR_NUMBER() = 2627 -- Optimistic Lock Violation (Concurrency Failure)
+            RAISERROR (50004, 16, 1, 'Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.')
+        ELSE
+            INSERT INTO dbo.DbError (ErrorTime, ApplicationName, ProcedureName, ErrorMessage)
+            VALUES (GETDATE(), 'ActivityUpdate', 'usp_ActivityUpdate', ERROR_MESSAGE());
 
-        RAISERROR (50000, 16, 1, 'Error occurred during ActivityUpdate operation.');
-    END CATCH;
+        -- Raise Error
+        RAISERROR (50000, 16, 1, 'Error occurred during ActivityUpdate operation.')
+        RETURN;
+    END CATCH
 END;
 GO

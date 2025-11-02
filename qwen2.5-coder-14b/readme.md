@@ -51,8 +51,8 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 
 ## Performance
 
-- Thought for: 0min1s
-- Tokens per second: 54.51
+- Thought for/first token after: 0min1s
+- Tokens per second (T-SQL/C#): 54.51
 
 ## Observations
 

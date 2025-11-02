@@ -36,8 +36,8 @@ In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performan
 
 ## Performance
 
-- Thought for: 0.2s / 0.2s
-- Tokens per second: 101.19 / 146.11
+- Thought for/first token after: 0.2s / 0.2s
+- Tokens per second (T-SQL/C#): 101.19 / 146.11
 
 ## Observations
 

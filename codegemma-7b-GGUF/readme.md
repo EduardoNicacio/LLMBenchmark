@@ -55,8 +55,8 @@ Please, make sure to not provide any extra spaces or newlines around the tokens,
 
 ## Performance
 
-- Thought for: ???
-- Tokens per second: ???
+- Thought for/first token after: ???
+- Tokens per second (T-SQL/C#): ???
 
 ## Observations
 

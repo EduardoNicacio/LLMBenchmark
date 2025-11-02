@@ -38,8 +38,8 @@ Supports a context length of up to 262,144 tokens.
 
 ## Performance
 
-- Thought for: 1min2s / 13.59s
-- Tokens per second: 119.09 / 125.43
+- Thought for/first token after: 1min2s / 13.59s
+- Tokens per second (T-SQL/C#): 119.09 / 125.43
 
 ## Observations
 

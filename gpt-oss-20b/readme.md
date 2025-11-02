@@ -43,8 +43,8 @@
 
 ## Performance
 
-- Thought for: 0min16s / 0min12s
-- Tokens per second: 122.60 / 112.60
+- Thought for/first token after: 0min16s / 0min12s
+- Tokens per second (T-SQL/C#): 122.60 / 112.60
 
 ## Observations
 

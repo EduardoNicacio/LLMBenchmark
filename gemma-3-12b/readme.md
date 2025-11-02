@@ -45,8 +45,8 @@
 
 ## Performance
 
-- Thought for: 0.8s / 0.6s
-- Tokens per second: 56.68 / 59.08
+- Thought for/first token after: 0.8s / 0.6s
+- Tokens per second (T-SQL/C#): 52.61 / 59.08
 
 ## Observations
 
@@ -89,5 +89,5 @@
     - Error Handling: Add error handling (try-catch blocks) and display appropriate error messages to users.
     - UI Framework: These pages use basic HTML. You can enhance them with a CSS framework like Bootstrap or Tailwind CSS.
 
-    This provides the core Razor Pages functionality.  Remember that this is a starting point, and you'll need to customize it further based on your application’s specific needs.
+    This provides the core Razor Pages functionality. Remember that this is a starting point, and you'll need to customize it further based on your application’s specific needs.
     ```

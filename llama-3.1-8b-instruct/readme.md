@@ -40,8 +40,8 @@ Model Architecture: Llama 3.1 is an auto-regressive language model that uses an 
 
 ## Performance
 
-- Thought for: ~0.6s / ~0.4s
-- Tokens per second: 94.72 / 96.67
+- Thought for/first token after: ~0.6s / ~0.4s
+- Tokens per second (T-SQL/C#): 94.72 / 96.67
 
 ## Observations
 

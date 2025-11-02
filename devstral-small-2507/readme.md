@@ -36,8 +36,8 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## Performance
 
-- Thought for: 3.33s / 3s
-- Tokens per second: 37.46 / 38.17
+- Thought for/first token after: 3.33s / 3s
+- Tokens per second (T-SQL/C#): 37.46 / 38.17
 
 ## Observations
 
