@@ -1,0 +1,71 @@
+@page
+@model CreateModel
+
+@{
+    ViewData["Title"] = "Create Activity";
+}
+
+<h1>Create Activity</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Activity.Name" class="control-label"></label>
+                <input asp-for="Activity.Name" class="form-control" />
+                <span asp-validation-for="Activity.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.Description" class="control-label"></label>
+                <textarea asp-for="Activity.Description" class="form-control"></textarea>
+                <span asp-validation-for="Activity.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.StartDate" class="control-label"></label>
+                <input asp-for="Activity.StartDate" class="form-control" type="date" />
+                <span asp-validation-for="Activity.StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.TargetDate" class="control-label"></label>
+                <input asp-for="Activity.TargetDate" class="form-control" type="date" />
+                <span asp-validation-for="Activity.TargetDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.ProgressStatus" class="control-label"></label>
+                <input asp-for="Activity.ProgressStatus" class="form-control" type="number" min="0" max="100" />
+                <span asp-validation-for="Activity.ProgressStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.Priority" class="control-label"></label>
+                <select asp-for="Activity.Priority" class="form-control">
+                    <option value="">Select Priority</option>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.Risk" class="control-label"></label>
+                <input asp-for="Activity.Risk" class="form-control" type="number" min="0" max="10" />
+                <span asp-validation-for="Activity.Risk" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Activity.Tags" class="control-label"></label>
+                <input asp-for="Activity.Tags" class="form-control" />
+                <span asp-validation-for="Activity.Tags" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <input asp-for="Activity.ActiveFlag" class="form-check-input" />
+                <label asp-for="Activity.ActiveFlag" class="form-check-label"></label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>

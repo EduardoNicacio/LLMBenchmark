@@ -1,0 +1,72 @@
+@page
+@model DetailsModel
+
+@{
+    ViewData["Title"] = $"Details: {Model.Activity.Name}";
+}
+
+<h1>Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Activity.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Activity.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.StartDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Activity.StartDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.TargetDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Activity.TargetDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.ProgressStatus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Activity.ProgressStatus)%
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.Priority)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Activity.Priority.HasValue ? Model.Activity.Priority.Value.ToString() : "N/A")
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.Risk)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Activity.Risk.HasValue ? Model.Activity.Risk.Value.ToString() : "N/A")
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.Tags)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Activity.Tags)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Activity.ActiveFlag)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Activity.ActiveFlag ? "Active" : "Inactive")
+        </dd>
+    </dl>
+</div>
+<p>
+    <a asp-page="./Edit" asp-route-id="@Model.Activity.ActivityId" class="btn btn-primary">Edit</a>
+    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+</p>

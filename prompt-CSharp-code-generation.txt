@@ -11,7 +11,7 @@ Based on the following SQL table definition, generate the necessary C# component
 - Unit Tests (NUnit): Tests for models, DTOs, and view models to validate property assignments and data annotations.
 - Integration Tests (Moq): Tests for EF Core repository methods, Minimal API endpoints, and Razor Pages, using Moq to simulate database interactions.
 
-Ensure all code follows .NET best practices, includes proper validation, and is ready for production use. Provide each component in separate code blocks with clear comments."
+Ensure all code follows .NET best practices, includes proper validation, and is ready for production use. Provide each component in separate code blocks with clear comments.
 
 Table Definition for Reference:
 
