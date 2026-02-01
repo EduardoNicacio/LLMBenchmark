@@ -1,0 +1,56 @@
+Prompt:
+
+Based on the following SQL table definition, generate the necessary C# components for a full-stack .NET application. The components should include:
+
+- C# Model: A class representing the Activity table, including all columns as properties with appropriate data types.
+- C# DTOs: Data Transfer Objects (DTOs) for Create, Update, and Read operations, mapping to the relevant fields in the Activity table.
+- C# View Models: View models for Create, Update, and List operations, tailored for use in Razor Pages.
+- Entity Framework Core Repository: A generic repository with CRUD methods (Get, Add, Update, Delete) and an Activity-specific repository implementation.
+- Minimal API: A Minimal API controller with endpoints for CRUD operations (GET, POST, PUT, DELETE) on the Activity table.
+- ASP.NET Razor Pages: Separate Razor Pages for Create, Edit, Details, Delete, and Index operations, including the necessary @page models and HTML forms.
+- Unit Tests (NUnit): Tests for models, DTOs, and view models to validate property assignments and data annotations.
+- Integration Tests (Moq): Tests for EF Core repository methods, Minimal API endpoints, and Razor Pages, using Moq to simulate database interactions.
+
+Ensure all code follows .NET best practices, includes proper validation, and is ready for production use. Provide each component in separate code blocks with clear comments."
+
+Table Definition for Reference:
+
+CREATE TABLE [dbo].[Activity](
+    [ActivityId] [uniqueidentifier] NOT NULL,
+    [ProjectId] [uniqueidentifier] NOT NULL,
+    [ProjectMemberId] [uniqueidentifier] NOT NULL,
+    [Name] [nvarchar](128) NOT NULL,
+    [Description] [nvarchar](4000) NOT NULL,
+    [StartDate] [date] NULL,
+    [TargetDate] [date] NULL,
+    [EndDate] [date] NULL,
+    [ProgressStatus] [tinyint] NULL,
+    [ActivityPoints] [smallint] NULL,
+    [Priority] [tinyint] NULL,
+    [Risk] [tinyint] NULL,
+    [Tags] [nvarchar](200) NULL,
+    [ActiveFlag] [tinyint] NOT NULL,
+    [SystemDeleteFlag] [char](1) NOT NULL,
+    [CreatedDateTime] [datetime2](7) NOT NULL,
+    [CreatedByUser] [nvarchar](100) NOT NULL,
+    [CreatedByProgram] [nvarchar](100) NOT NULL,
+    [UpdatedDateTime] [datetime2](7) NULL,
+    [UpdatedByUser] [nvarchar](100) NULL,
+    [UpdatedByProgram] [nvarchar](100) NULL,
+    [SystemTimestamp] [timestamp] NOT NULL,
+    CONSTRAINT [PK_Activity_ActivityId] PRIMARY KEY CLUSTERED ([ActivityId] ASC)
+) ON [PRIMARY];
+GO
+
+Expected Output Structure:
+
+- C# Model
+- C# DTOs (CreateDto, UpdateDto, ReadDto)
+- C# View Models (CreateViewModel, UpdateViewModel, ListViewModel)
+- EF Core Repository (Generic Repository, Activity Repository)
+- Minimal API (CRUD Endpoints)
+- Razor Pages (Create.cshtml, Edit.cshtml, Details.cshtml, Delete.cshtml, Index.cshtml, and their respective PageModels)
+- Unit Tests (NUnit)
+- Integration Tests (Moq)
+
+Provide each component in a well-organized, production-ready format.

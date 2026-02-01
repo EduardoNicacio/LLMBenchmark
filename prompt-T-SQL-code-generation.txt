@@ -1,0 +1,88 @@
+Task:
+
+Generate SQL stored procedures for the Activity table based on the following requirements. Use T-SQL syntax and ensure the code is production-ready.
+
+Table Definition:
+
+CREATE TABLE [dbo].[Activity](
+    [ActivityId] [uniqueidentifier] NOT NULL,
+    [ProjectId] [uniqueidentifier] NOT NULL,
+    [ProjectMemberId] [uniqueidentifier] NOT NULL,
+    [Name] [nvarchar](128) NOT NULL,
+    [Description] [nvarchar](4000) NOT NULL,
+    [StartDate] [date] NULL,
+    [TargetDate] [date] NULL,
+    [EndDate] [date] NULL,
+    [ProgressStatus] [tinyint] NULL,
+    [ActivityPoints] [smallint] NULL,
+    [Priority] [tinyint] NULL,
+    [Risk] [tinyint] NULL,
+    [Tags] [nvarchar](200) NULL,
+    [ActiveFlag] [tinyint] NOT NULL,
+    [SystemDeleteFlag] [char](1) NOT NULL,
+    [CreatedDateTime] [datetime2](7) NOT NULL,
+    [CreatedByUser] [nvarchar](100) NOT NULL,
+    [CreatedByProgram] [nvarchar](100) NOT NULL,
+    [UpdatedDateTime] [datetime2](7) NULL,
+    [UpdatedByUser] [nvarchar](100) NULL,
+    [UpdatedByProgram] [nvarchar](100) NULL,
+    [SystemTimestamp] [timestamp] NOT NULL,
+    CONSTRAINT [PK_Activity_ActivityId] PRIMARY KEY CLUSTERED ([ActivityId] ASC)
+) ON [PRIMARY];
+GO
+
+Stored Procedures to Create:
+
+usp_ActivityInsert:
+
+- Input parameters: All columns except UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp.
+- Explicitly include CreatedDateTime, CreatedByUser, and CreatedByProgram as input parameters.
+- Default nullable columns to NULL.
+
+usp_ActivityDelete:
+
+- Input parameters: ActivityId, UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp.
+- Soft-delete by setting SystemDeleteFlag = 'Y'.
+- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram to SYSUTCDATETIME(), SYSTEM_USER, and APP_NAME() if null.
+- Use SystemTimestamp for optimistic locking.
+
+usp_ActivityUpdate:
+
+- Input parameters: All columns except CreatedDateTime, CreatedByUser, and CreatedByProgram.
+- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram to SYSUTCDATETIME(), SYSTEM_USER, and APP_NAME() if null.
+- Use SystemTimestamp for optimistic locking.
+
+usp_ActivityRetrieve:
+
+- Input parameters: All columns (defaulted to NULL), except UpdatedDateTime, UpdatedByUser, and UpdatedByProgram.
+- Default ActiveFlag to 1 and SystemDeleteFlag to 'N'.
+- Use wildcard search for varchar and nvarchar columns:
+
+    (@Parameter IS NULL OR CHARINDEX(@Parameter, [Column], 0) > 0)
+
+- Use date range search for date columns:
+
+    (@DateTimeParameter IS NULL OR DateTimeColumn >= @DateTimeParameter AND DateTimeColumn < DATEADD(day, 1, @DateTimeParameter))
+
+usp_ActivityRetrieveForList:
+
+- Retrieve ActivityId and Name for active, non-deleted records (ActiveFlag = 1 and SystemDeleteFlag <> 'Y').
+
+General Requirements for All Stored Procedures:
+
+- Validate input parameters for type, size, and nullability.
+- Raise error 50001 for null parameters.
+- Raise error 50002 for string parameters exceeding column length.
+- Raise error 50003 for invalid ActiveFlag (must be 0 or 1) or SystemDeleteFlag (must be 'N' or 'Y').
+- Wrap SELECT, INSERT, and UPDATE statements in a TRY...CATCH block.
+- Log errors to dbo.DbError table in the CATCH block.
+- Raise error 50000 with message: "Error occurred during [Operation] operation."
+- For optimistic lock violations, raise error 50004 with message:
+
+    "Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again."
+
+- Enclose each stored procedure in a separate SQL code block.
+
+Output Format:
+
+Provide each stored procedure in a separate code block, fully functional and ready to execute.

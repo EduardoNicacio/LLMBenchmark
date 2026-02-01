@@ -28,7 +28,7 @@
 
 ## Abstract
 
-This study systematically evaluates the performance of 14 large language models (LLMs) in generating production-ready SQL stored procedures and corresponding .NET full-stack application components. The benchmark reveals significant variations in code quality, contextual handling, and adherence to explicit technical requirements. Notably, the models demonstrated divergent approaches to critical implementation challenges, including input parameter validation, error handling mechanisms, SQL syntax correctness, and code organization. The most consistent pattern across models was inadequate handling of SQL reserved words without proper bracketing—only the Qwen models maintained this best practice for Microsoft SQL Server environments. Context limitations emerged as a critical constraint, with several models (particularly the 15B-thinker model) experiencing output truncation due to exceeding context window sizes during complex code generation tasks.
+This study systematically evaluates the performance of 20 large language models (LLMs) in generating production-ready SQL stored procedures and corresponding .NET full-stack application components. The benchmark reveals significant variations in code quality, contextual handling, and adherence to explicit technical requirements. Notably, the models demonstrated divergent approaches to critical implementation challenges, including input parameter validation, error handling mechanisms, SQL syntax correctness, and code organization. The most consistent pattern across models was inadequate handling of SQL reserved words without proper bracketing—only the Qwen models maintained this best practice for Microsoft SQL Server environments. Context limitations emerged as a critical constraint, with several models (particularly the 15B-thinker model) experiencing output truncation due to exceeding context window sizes during complex code generation tasks.
 
 The analysis identified two models with particularly strong performance characteristics: the OpenAI gpt-oss-20b model demonstrated exceptional output quality through comprehensive documentation, appropriate SQL syntax (using square brackets for column names), and a well-structured folder hierarchy for .NET implementation. The Qwen family (particularly qwen3-4b-thinking-2507) emerged as the most comprehensive generator, producing well-organized code with proper error handling and Bootstrap integration for Razor pages. Conversely, several models exhibited critical failures in production readiness, including insufficient input validation, inadequate error handling, and incomplete implementation of requested components—particularly the CodeGemma-7b model which hallucinated Python solutions for SQL tasks and crashed mid-generation.
 
@@ -57,7 +57,7 @@ For each model and each coding task (T-SQL and C#), implement these checks:
 
 | Evaluation Area | Specific Checks | Pass/Fail Criteria |
 | :--- | :--- | :--- |
-| SQL Syntax | Proper bracketing of reserved words | Must use [brackets] for all reserved words (only Qwen models maintained this best practice) |
+| SQL Syntax | Proper bracketing of reserved words | Must use [brackets] for all reserved words (only a handful of models maintained this best practice) |
 | Error Handling | Error 50001-50004 implementation | Must raise specific errors as defined in requirements |
 | Input Validation | Parameter validation as specified | All null parameters must trigger error 50001 |
 | Production Readiness | Error logging to dbo.DbError table | Must implement TRY...CATCH with proper logging |
@@ -105,41 +105,50 @@ The study was conducted on a high-performance Windows system, consisting in:
 - Storage: [Crucial P5 Plus 1TB Gen4 NVMe M.2 SSD](https://www.crucial.com/ssd/p5-plus/ct1000p5pssd5)
 - Graphics card: [Sapphire PURE AMD Radeon™ RX 9070 XT](https://www.sapphiretech.com/en/consumer/pure-radeon-rx-9070-xt-16g-gddr6)
 - Operating System: [Microsoft Windows 11 Professional 24-H2 (OS build 26200.6725)](https://www.microsoft.com/en-ca/windows/windows-11)
-- LLM Platform: [LM Studio 0.3.28](https://lmstudio.ai/)
-- Library: [llama.cpp Vulkan Windows v1.52.1](https://github.com/ggml-org/llama.cpp)
+- LLM Platform: [LM Studio 0.4.1 (Build 1)](https://lmstudio.ai/)
+- Library: [Vulkan llama.cpp (Windows) v2.0.1](https://github.com/ggml-org/llama.cpp)
 
 This configuration represents a typical high-end local development environment for running LLMs.
 
 ### LLM Models Chosen
 
-The benchmark evaluated 14 models across different categories:
+The benchmark evaluated 20 models across different categories:
 
-1. Specialized Coding Models:
+1. Specialized Coding Models
 
     - [deepseek/deepseek-coder-v2-lite-instruct](/deepseek-coder-v2-lite-instruct/readme.md)
     - [google/codegemma-7b](/codegemma-7b-GGUF/readme.md)
-    - [meta-ai/llama-3.1-8b-instruct](/llama-3.1-8b-instruct/readme.md)
     - [mistralai/codestral-22b-v01](/codestral-22b-v0.1/readme.md)
+    - [nousresearch/nouscoder-14b](/nouscoder-14b/readme.md)
     - [qwen/qwen2.5-coder-14b](/qwen2.5-coder-14b/readme.md)
+    - [mistralai/devstral-small-2507](/devstral-small-2507/readme.md)
+    - [mistralai/devstral-small2-2512](/devstral-small2-2512/readme.md)
 
-2. General Purpose Models:
+2. General Purpose Models
 
-    - [cohere/command-a-03-2025](/command-a-03-2025/readme.md) - Online model
-    - [google/gemma-3-12b](/gemma-3-12b/readme.md)
+    - [cohere/command-a-03-2025](/command-a-03-2025/readme.md)
+    - [google/gemma-3-12b](/codegemma-7b-GGUF/readme.md)
     - [ibm/granite-4-h-tiny](/granite-4-h-tiny/readme.md)
     - [microsoft/phi-4-reasoning-plus](/phi-4-reasoning-plus/readme.md)
+    - [mistralai/ministral-3-14b-reasoning](/ministral-3-14b-reasoning/readme.md)
     - [openai/gpt-oss-20b](/gpt-oss-20b/readme.md)
     - [qwen/qwen3-4b-2507](/qwen3-4b-2507/readme.md)
+    - [meta-ai/llama-3.1-8b-instruct](/llama-3.1-8b-instruct/readme.md)
     - [servicenow-ai/apriel-1.5-15b-thinker](/apriel-1.5-15b-thinker/readme.md)
 
-3. Specialized Variants:
+3. Specialized Variants
 
     - [qwen/qwen3-4b-thinking-2507](/qwen3-4b-thinking-2507/readme.md)
-    - [mistralai/devstral-small-2507](/devstral-small-2507/readme.md)
+    - [nvidia/nemotron-cascade-14b-thinking](/nemotron-cascade-14b-thinking/readme.md)
+    - [zai-org/glm-4.6v-flash](/glm-4.6v-flash/readme.md)
+
+4. Multimodal Specialized Models
+
+    - [qwen/qwen3-VL-8b](/qwen3-VL-8b/readme.md)
 
 This methodology directly addresses one's one-pass constraint while ensuring meaningful results. By standardizing the prompt and evaluation criteria, one can fairly compare models without introducing bias from prompt variations. The focus on specific failure points (like the SQL reserved words issue highlighted in the document) ensures one captures the most critical weaknesses that affect real-world deployment.
 
-The most valuable insight from this approach would be identifying which models consistently handle complex code generation without context truncation while maintaining proper SQL syntax and error handling - the key finding from the document that only the Cohere, Mistral-AI, OpenAI and Qwen models maintained proper bracketing for SQL reserved words. Qwen models have taken a step beyond by including proper bracketing for all the columns of the given table.
+The most valuable insight from this approach would be identifying which models consistently handle complex code generation without context truncation while maintaining proper SQL syntax and error handling - the key finding from the document is that only the Cohere, Mistral-AI, OpenAI and Qwen models maintained proper bracketing for SQL reserved words. Qwen models have taken a step beyond by including proper bracketing for all the columns of the given table.
 
 This methodology provides actionable insights for developers selecting the right local LLM for production code generation tasks without compromising quality.
 
@@ -357,7 +366,7 @@ When it comes to run LLMs locally, choosing the right model for a given task is 
 
 With all that said, choosing the right model for the tasks above allowed me to refactor an old Asp.Net project of mine as follows:
 
-- Data layer: 20h (SQL Server 2022 db with 67 tables and 146 stored procedures, totalling 17,000 lines of code).
+- Data layer: 20h (SQL Server 2022 database, with 67 tables and 146 stored procedures, totalling ~17,000 lines of code).
 - C# Models: TBD
 - C# DTOs: TBD
 - C# ViewModels: TBD
