@@ -1,16 +1,12 @@
 # Model
 
-> [qwen/qwen3-4b-thinking-2507](https://lmstudio.ai/models/qwen/qwen3-4b-thinking-2507)
+> [zai-org/glm-4.6v-flash](https://lmstudio.ai/models/zai-org/glm-4.6v-flash)
 
 ## Summary
 
-Updated thinking version of Qwen3-4B featuring continued scaling of thinking capability, improving both the quality and depth of reasoning. **Qwen3-4B-Thinking-2507** includes the following key enhancements:
+GLM 4.6V Flash is a 9B vision-language model optimized for local deployment and low-latency applications. It supports a context length of 128k tokens and achieves strong performance in visual understanding among models of similar scale.
 
-Significantly improved performance on reasoning tasks, including logical reasoning, mathematics, science, coding, and academic benchmarks that typically require human expertise. Markedly better general capabilities, such as instruction following, tool usage, text generation, and alignment with human preferences. Enhanced 256K long-context understanding capabilities.
-
-Supports a context length of up to 262,144 tokens.
-
-> Note: This model supports only thinking mode. Specifying `enable_thinking=True` is not required.
+The model introduces native multimodal function calling, enabling vision-driven tool use where images, screenshots, and document pages can be passed directly as tool inputs without text conversion.
 
 ## Model Inference Parameters
 
@@ -39,19 +35,11 @@ Supports a context length of up to 262,144 tokens.
 
 ## Performance
 
-- Thought for/first token after: 1min2s / 13.59s
-- Tokens per second (T-SQL/C#): 119.09 / 125.43
+- Thought for/first token after: 0.94s / 5min36s
+- Tokens per second (T-SQL/C#): 61.12 / 35.50
 
 ## Observations
 
-- Good performance. Most comprehensive source code.
-- Along with [qwen3-4b-2507](/qwen3-4b-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
-- Model didn't create all the required C# code, but gave me some tips as follows:
-
-    ```txt
-    File: Pages/Activities/Edit.cshtml (Structure similar to Create, with @model UpdateActivityViewModel)
-    File: Pages/Activities/Details.cshtml (Structure: @model ReadActivityDto)
-    File: Pages/Activities/Delete.cshtml (Structure: Confirmation form with @model Guid)
-
-    Note: Razor Pages use Model Binding and ASP.NET Core validation. All pages include proper error handling and form submission.
-    ```
+- The whole `thinking` process of this model happened in Chinese, making it impossible to follow as I'm not a Chinese speaker.
+- Didn't provide each SQL statement into a separate block, making it hard to copy and paste each stored procedure. At least the code follows the standards observed in other models.
+- Similarly to the model qwen3-VL-8b, didn't create the Razor pages as intructed; only the code-behind has been created. Also, no ViewModel has been created at all.
