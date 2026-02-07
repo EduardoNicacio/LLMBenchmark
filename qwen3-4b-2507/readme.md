@@ -14,7 +14,7 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## Model Inference Parameters
 
-- Temperature: 0.6
+- Temperature: 0.15
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -26,6 +26,7 @@ Enhanced capabilities in 256K long-context understanding.
 - GPU offload: 36/36
 - CPU thread pool: 9
 - Evaluation batch size: 512
+- Max Concurrent Predictions: 4
 - RoPE Frequency Base: auto
 - RoPE Frequency Scale: auto
 - Offload KV cache to GPU memory: on

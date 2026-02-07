@@ -12,7 +12,7 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## Model Inference Parameters
 
-- Temperature: 0.8
+- Temperature: 0.15
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -24,6 +24,7 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 - GPU offload: 40/40
 - CPU thread pool: 9
 - Evaluation batch size: 512
+- Max Concurrent Predictions: 4
 - RoPE Frequency Base: auto
 - RoPE Frequency Scale: auto
 - Offload KV cache to GPU memory: on

@@ -27,7 +27,7 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 
 ## Model Inference Parameters
 
-- Temperature: 0.5
+- Temperature: 0.15
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -39,6 +39,7 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 - GPU offload: 48/48
 - CPU thread pool: 9
 - Evaluation batch size: 512
+- Max Concurrent Predictions: 4
 - RoPE Frequency Base: auto
 - RoPE Frequency Scale: auto
 - Offload KV cache to GPU memory: on
