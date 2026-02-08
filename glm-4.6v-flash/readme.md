@@ -35,7 +35,7 @@ The model introduces native multimodal function calling, enabling vision-driven 
 
 ## Performance
 
-- Thought for/first token after: 0.94s / 5min36s
+- Thought for/first token after: 2min43s / 5min36s
 - Tokens per second (T-SQL/C#): 61.12 / 35.50
 
 ## Observations
