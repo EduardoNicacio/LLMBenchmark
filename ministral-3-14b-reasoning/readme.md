@@ -1,16 +1,19 @@
 # Model
 
-> [qwen/qwen3-4b-thinking-2507](https://lmstudio.ai/models/qwen/qwen3-4b-thinking-2507)
+> [mistralai/ministral-3-14b-reasoning](https://lmstudio.ai/models/mistralai/ministral-3-14b-reasoning)
 
 ## Summary
 
-Updated thinking version of Qwen3-4B featuring continued scaling of thinking capability, improving both the quality and depth of reasoning. **Qwen3-4B-Thinking-2507** includes the following key enhancements:
+The reasoning post-trained version of Ministral 3 14B, optimized for complex reasoning tasks.
 
-Significantly improved performance on reasoning tasks, including logical reasoning, mathematics, science, coding, and academic benchmarks that typically require human expertise. Markedly better general capabilities, such as instruction following, tool usage, text generation, and alignment with human preferences. Enhanced 256K long-context understanding capabilities.
+- Supports context length of 256k tokens.
+- Excels at complex, multi-step reasoning and dynamic problem-solving, making it ideal for math, coding, and STEM-related use cases.
+- Vision-enabled for image analysis and multimodal reasoning tasks.
+- Multilingual support across dozens of languages including English, French, Spanish, German, Italian, Portuguese, Dutch, Chinese, Japanese, Korean, Arabic.
+- Native function calling and JSON output generation with best-in-class agentic capabilities.
+- Edge-optimized for deployment on a wide range of hardware including local devices.
 
-Supports a context length of up to 262,144 tokens.
-
-> Note: This model supports only thinking mode. Specifying `enable_thinking=True` is not required.
+Apache 2.0 License
 
 ## Model Inference Parameters
 
@@ -39,19 +42,11 @@ Supports a context length of up to 262,144 tokens.
 
 ## Performance
 
-- Thought for/first token after: 1min2s / 13.59s
-- Tokens per second (T-SQL/C#): 119.09 / 125.43
+- Thought for/first token after: 2min41s / 3min7s
+- Tokens per second (T-SQL/C#): 52.31 / ?
 
 ## Observations
 
-- Good performance. Most comprehensive source code.
-- Along with [qwen3-4b-2507](/qwen3-4b-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
-- Model didn't create all the required C# code, but gave me some tips as follows:
-
-    ```txt
-    File: Pages/Activities/Edit.cshtml (Structure similar to Create, with @model UpdateActivityViewModel)
-    File: Pages/Activities/Details.cshtml (Structure: @model ReadActivityDto)
-    File: Pages/Activities/Delete.cshtml (Structure: Confirmation form with @model Guid)
-
-    Note: Razor Pages use Model Binding and ASP.NET Core validation. All pages include proper error handling and form submission.
-    ```
+- Followed the instructions to the letter (T-SQL), creating each stored procedure in a separate code block, including all the specified validations.
+- Assumed [dbo] ad the default schema in which the stored procedures should be created. Also, correctly used `CREATE OR ALTER PROCEDURE...` instead of just `CREATE PROCEDURE...`, which can cause errors if these stored procedures already exist.
+- Followed the instructions to the letter (C#), but the code generation failed when creating the Razor pages due to a context overflow. The produced code looks promising, though.
