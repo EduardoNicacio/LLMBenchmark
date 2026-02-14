@@ -1,6 +1,6 @@
 Task:
 
-Generate SQL stored procedures for the Activity table based on the following requirements. Use T-SQL syntax and ensure the code is production-ready.
+Generate SQL stored procedures for the Activity table below based on the following requirements. Use T-SQL syntax and ensure the code is production-ready.
 
 Table Definition:
 
