@@ -112,7 +112,7 @@ This configuration represents a typical high-end local development environment f
 
 ### LLM Models Chosen
 
-The benchmark evaluated 20 models across different categories:
+The benchmark evaluated 21 models across different categories:
 
 1. Specialized Coding Models
 
@@ -132,7 +132,8 @@ The benchmark evaluated 20 models across different categories:
     - [microsoft/phi-4-reasoning-plus](/phi-4-reasoning-plus/readme.md)
     - [mistralai/ministral-3-14b-reasoning](/ministral-3-14b-reasoning/readme.md)
     - [openai/gpt-oss-20b](/gpt-oss-20b/readme.md)
-    - [qwen/qwen3-4b-2507](/qwen3-4b-2507/readme.md)
+    - [qwen/qwen3-4b-2507](/qwen3.5-9b/readme.md)
+    - [qwen/qwen3.5-9b](/qwen3-4b-2507/readme.md)
     - [meta-ai/llama-3.1-8b-instruct](/llama-3.1-8b-instruct/readme.md)
     - [servicenow-ai/apriel-1.5-15b-thinker](/apriel-1.5-15b-thinker/readme.md)
 

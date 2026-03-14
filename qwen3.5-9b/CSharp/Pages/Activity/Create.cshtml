@@ -1,0 +1,36 @@
+<!-- Pages/Activity/Create.cshtml -->
+@page
+@model ActivityApp.Pages.Activity.CreateModel
+@{
+    ViewData["Title"] = "Create Activity";
+}
+<h1>Create Activity</h1>
+<form method="post">
+    <div>
+        <label>Name</label>
+        <input asp-for="ViewModel.Name" />
+        <span asp-validation-for="ViewModel.Name"></span>
+    </div>
+    <div>
+        <label>Description</label>
+        <textarea asp-for="ViewModel.Description"></textarea>
+        <span asp-validation-for="ViewModel.Description"></span>
+    </div>
+    <div>
+        <label>ProjectId</label>
+        <input asp-for="ViewModel.ProjectId" />
+    </div>
+    <div>
+        <label>ProjectMemberId</label>
+        <input asp-for="ViewModel.ProjectMemberId" />
+    </div>
+    <div>
+        <label>Tags</label>
+        <input asp-for="ViewModel.Tags" />
+    </div>
+    <div>
+        <label>ActiveFlag</label>
+        <input asp-for="ViewModel.ActiveFlag" />
+    </div>
+    <button type="submit">Create</button>
+</form>

@@ -1,0 +1,17 @@
+<!-- Pages/Activity/Details.cshtml -->
+@page
+@model ActivityApp.Pages.Activity.DetailsModel
+@{
+    ViewData["Title"] = "Activity Details";
+}
+<h1>Activity Details</h1>
+<div>
+    <h3>Name: @Model.Activity.Name</h3>
+    <p>Description: @Model.Activity.Description</p>
+    <p>ProjectId: @Model.Activity.ProjectId</p>
+    <p>Tags: @Model.Activity.Tags</p>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Activity.ActivityId">Edit</a> |
+    <a asp-page="./Delete" asp-route-id="@Model.Activity.ActivityId">Delete</a>
+</div>
