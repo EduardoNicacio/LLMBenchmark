@@ -25,7 +25,7 @@
 
 ## LLM Studio Parameters
 
-- Context length: 16384
+- Context length: 65535
 - GPU offload: 24/24
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -51,7 +51,7 @@
 
 - Stopped mid-execution due to context max size of 4096. Needed to be restarted with a larger context of 8192 tokens.
 - Very good performance on both tasks. Added sweet comments throughout the code.
-- Correctly used squared bracked around column names that can be mistaken by MS SQL server reserved words, like Name and Description.
+- Correctly used squared brackets around column names that can be mistaken by MS SQL server reserved words, like Name and Description.
 - Suggested all the Nuget packages required by the full-stack .Net code:
 
     ```txt

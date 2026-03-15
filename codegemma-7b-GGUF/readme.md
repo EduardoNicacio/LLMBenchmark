@@ -1,6 +1,6 @@
 # Model
 
-> [google/codegemma-7b](https://huggingface.co/google/codegemma-7b)
+> [lmstudio-community/codegemma-1.1-7b-it-GGUF](https://huggingface.co/lmstudio-community/codegemma-1.1-7b-it-GGUF)
 
 ## Summary
 
@@ -56,8 +56,8 @@ Please, make sure to not provide any extra spaces or newlines around the tokens,
 
 ## Performance
 
-- Thought for/first token after: ???
-- Tokens per second (T-SQL/C#): ???
+- Thought for/first token after: ? / ?
+- Tokens per second (T-SQL/C#): ? / ?
 
 ## Observations
 
