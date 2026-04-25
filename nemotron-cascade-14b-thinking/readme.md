@@ -1,16 +1,26 @@
 # Model
 
-> [qwen/qwen3-4b-thinking-2507](https://lmstudio.ai/models/qwen/qwen3-4b-thinking-2507)
+> [nvidia/Nemotron-Cascade-14B-Thinking](https://huggingface.co/nvidia/Nemotron-Cascade-14B-Thinking)
 
-## Summary
+## Introduction
 
-Updated thinking version of Qwen3-4B featuring continued scaling of thinking capability, improving both the quality and depth of reasoning. **Qwen3-4B-Thinking-2507** includes the following key enhancements:
+We're excited to introduce Nemotron-Cascade-14B-Thinking, a powerful general-purpose model trained through sequential and domain-wise reinforcement learning. Nemotron-Cascade-14B-Thinking is post-trained from the Qwen3-14B Base model, and it achieves best-in-class performance across a wide range of benchmarks. Different from Nemotron-Cascade-8B, Nemotron-Cascade-14B-Thinking is designed exclusively for the thinking mode.
 
-Significantly improved performance on reasoning tasks, including logical reasoning, mathematics, science, coding, and academic benchmarks that typically require human expertise. Markedly better general capabilities, such as instruction following, tool usage, text generation, and alignment with human preferences. Enhanced 256K long-context understanding capabilities.
+## Training Pipeline
 
-Supports a context length of up to 262,144 tokens.
+![pipeline](/_img/pipeline.png)
 
-> Note: This model supports only thinking mode. Specifying `enable_thinking=True` is not required.
+The training pipeline for Nemotron-Cascade begins with a multi-stage SFT phase to equip the model with foundational skills. Subsequently, Cascade RL is applied across multiple domains to further enhance the model’s performance in these areas.
+
+Notably, RLHF for alignment, when used as a pre-step, boosts the model’s complex reasoning ability far beyond mere preference optimization, and subsequent domain-wise RLVR stages rarely degrade the benchmark performance attained in earlier domains and may even improve it (see an illustration in the following Figure).
+
+![cascade](/_img/lcb_through_cascade_rl.png)
+
+## Results
+
+We evaluate our model against competitive reasoning models on a diverse set of benchmarks, covering general-knowledge reasoning, alignment and instruction following, mathematical reasoning, competitive programming, software engineering, and tool-use proficiency.
+For Nemotron-Cascade models, we use a maximum generation length of 64K tokens and set the temperature to 0.6 and top-p to 0.95 for reasoning tasks.
+Our Nemotron-Cascade-14B-Thinking achieves best-in-class performance across almost all benchmarks. Remarkably, Nemotron-Cascade-14B-Thinking surpasses DeepSeek-R1-0528 (671B) by a clear margin across all LCB v5, v6, and Pro benchmarks.
 
 ## Model Inference Parameters
 
@@ -39,19 +49,7 @@ Supports a context length of up to 262,144 tokens.
 
 ## Performance
 
-- Thought for/first token after: 1min2s / 13.59s
-- Tokens per second (T-SQL/C#): 119.09 / 125.43
+- Thought for/first token after: 3min41s / 13.59s
+- Tokens per second (T-SQL/C#): 35.76 / 125.43
 
 ## Observations
-
-- Good performance. Most comprehensive source code.
-- Along with [qwen3-4b-2507](/qwen3-4b-2507/readme.md), this was the only model to include all the columns with squared brackets, a good practice in MS SQL server.
-- Model didn't create all the required C# code, but gave me some tips as follows:
-
-    ```txt
-    File: Pages/Activities/Edit.cshtml (Structure similar to Create, with @model UpdateActivityViewModel)
-    File: Pages/Activities/Details.cshtml (Structure: @model ReadActivityDto)
-    File: Pages/Activities/Delete.cshtml (Structure: Confirmation form with @model Guid)
-
-    Note: Razor Pages use Model Binding and ASP.NET Core validation. All pages include proper error handling and form submission.
-    ```
