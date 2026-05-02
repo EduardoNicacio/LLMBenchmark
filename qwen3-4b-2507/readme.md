@@ -14,7 +14,7 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -39,8 +39,8 @@ Enhanced capabilities in 256K long-context understanding.
 
 ## Performance
 
-- Thought for/first token after: 0.2s / 0.2s
-- Tokens per second (T-SQL/C#): 135.84 / 117.54
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

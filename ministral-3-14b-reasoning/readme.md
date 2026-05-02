@@ -17,7 +17,7 @@ Apache 2.0 License
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -42,8 +42,8 @@ Apache 2.0 License
 
 ## Performance
 
-- Thought for/first token after: 2min41s / 3min7s
-- Tokens per second (T-SQL/C#): 52.31 / ?
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

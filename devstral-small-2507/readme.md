@@ -12,7 +12,7 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -37,8 +37,8 @@ Despite its compact size of just 24 billion parameters, Devstral outperforms muc
 
 ## Performance
 
-- Thought for/first token after: 3.33s / 3s
-- Tokens per second (T-SQL/C#): 37.46 / 38.17
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

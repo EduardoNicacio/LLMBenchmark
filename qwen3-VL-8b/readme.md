@@ -30,7 +30,7 @@ Delivers strong vision-language performance across diverse tasks including docum
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -55,8 +55,8 @@ Delivers strong vision-language performance across diverse tasks including docum
 
 ## Performance
 
-- Thought for/first token after: 0.35s / 0.28s
-- Tokens per second (T-SQL/C#): 92.19 / 87.20
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

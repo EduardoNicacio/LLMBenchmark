@@ -192,7 +192,7 @@ Please report security vulnerabilities or NVIDIA AI Concerns here.
 
 ## Model Inference Parameters
 
-* Temperature: 0.15
+* Temperature: 0.1
 * Top K Sampling: 20
 * Repeat Penalty: off
 * Min P Sampling: 0.0
@@ -217,7 +217,7 @@ Please report security vulnerabilities or NVIDIA AI Concerns here.
 
 ## Performance
 
-* Thought for/first token after: ??? / ???
-* Tokens per second (T-SQL/C#): ??? / ???
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations

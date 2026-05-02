@@ -14,7 +14,7 @@ Supports a context length of up to 262,144 tokens.
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -39,8 +39,8 @@ Supports a context length of up to 262,144 tokens.
 
 ## Performance
 
-- Thought for/first token after: 1min2s / 13.59s
-- Tokens per second (T-SQL/C#): 119.09 / 125.43
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

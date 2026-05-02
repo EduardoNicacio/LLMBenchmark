@@ -10,7 +10,7 @@ The model introduces native multimodal function calling, enabling vision-driven 
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -35,8 +35,8 @@ The model introduces native multimodal function calling, enabling vision-driven 
 
 ## Performance
 
-- Thought for/first token after: 2min43s / 5min36s
-- Tokens per second (T-SQL/C#): 61.12 / 35.50
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

@@ -16,7 +16,7 @@ Model Architecture: Llama 3.1 is an auto-regressive language model that uses an 
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -41,8 +41,8 @@ Model Architecture: Llama 3.1 is an auto-regressive language model that uses an 
 
 ## Performance
 
-- Thought for/first token after: ~0.6s / ~0.4s
-- Tokens per second (T-SQL/C#): 94.72 / 96.67
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

@@ -15,7 +15,7 @@ More details and benchmark information can be found on their blogpost here:
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -40,8 +40,8 @@ More details and benchmark information can be found on their blogpost here:
 
 ## Performance
 
-- Thought for/first token after: ~3s / ~1.5s
-- Tokens per second (T-SQL/C#): 37.69 / 39.66
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

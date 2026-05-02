@@ -17,7 +17,7 @@ Phi-4-reasoning-plus has been trained additionally with Reinforcement Learning, 
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -42,8 +42,8 @@ Phi-4-reasoning-plus has been trained additionally with Reinforcement Learning, 
 
 ## Performance
 
-- Thought for/first token after: 4min12s / 4min27s
-- Tokens per second (T-SQL/C#): 49.99 / 44.83
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

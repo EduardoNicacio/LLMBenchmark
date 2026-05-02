@@ -133,7 +133,7 @@ The benchmark evaluated 20 models across different categories:
     - [qwen/qwen3-4b-2507](/qwen3.5-9b/readme.md)
     - [qwen/qwen3.5-9b](/qwen3-4b-2507/readme.md)
     - [meta-ai/llama-3.1-8b-instruct](/llama-3.1-8b-instruct/readme.md)
-    - [servicenow-ai/apriel-1.5-15b-thinker](/apriel-1.5-15b-thinker/readme.md)
+    - [servicenow-ai/apriel-1.6-15b-thinker](/apriel-1.6-15b-thinker/readme.md)
 
 3. Specialized Variants
 

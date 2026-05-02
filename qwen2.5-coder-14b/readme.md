@@ -27,7 +27,7 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -52,11 +52,11 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 
 ## Performance
 
-- Thought for/first token after: 0min1s
-- Tokens per second (T-SQL/C#): 54.51
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 
 - Same output quality of qwen3-4b-2507, but almost three times slower.
-- Didn't create each stored procued into a single code block as requested.
+- Didn't create each stored procedure into a single code block as requested.
 - I needed to manually request the code generation for some missing pages (`Edit`, `Details`, `Delete`, and `Index`), as well as the missing repository methods `GetByIdAsync()`, `AddAsync()`, `Update()` and `Delete()` as defined in the interface IGenericRepository. Not all the methods defined in this interface have been implemented in the (`IQueryable<T> GetAll()` vs `Task<List<ReadActivityDto>> GetAllAsync()`).

@@ -42,8 +42,8 @@ Qwen3.5 represents a significant leap forward, integrating breakthroughs in mult
 
 ## Performance
 
-- Thought for/first token after: 1min57s / 47s
-- Tokens per second (T-SQL/C#): 61.17 / 60.52
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

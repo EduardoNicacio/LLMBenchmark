@@ -1,6 +1,6 @@
 # Benchmark summary
 
-## servicenow-ai/apriel-1.5-15b-thinker
+## servicenow-ai/apriel-1.6-15b-thinker
 
 - Differently from other "thinking" or "reasoning" models, it displays its chain of thought directly in the LM Studio chat output.
 - It included a nice documentation at the header of each stored procedure, and split them all into separate code blocks as asked.

@@ -10,7 +10,7 @@ In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performan
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -37,8 +37,8 @@ In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performan
 
 ## Performance
 
-- Thought for/first token after: 0.2s / 0.2s
-- Tokens per second (T-SQL/C#): 101.19 / 146.11
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

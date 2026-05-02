@@ -109,7 +109,7 @@ Your use of this model is governed by the [NVIDIA Open Model License](https://ww
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0

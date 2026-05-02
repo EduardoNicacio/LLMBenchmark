@@ -1,21 +1,30 @@
 # Model
 
-> [servicenow-ai/apriel-1.5-15b-thinker](https://huggingface.co/ServiceNow-AI/Apriel-1.5-15b-Thinker)
+> [servicenow-ai/apriel-1.6-15b-thinker](https://huggingface.co/ServiceNow-AI/Apriel-1.6-15b-Thinker)
 
 ## Summary
 
-**Apriel-1.5-15b-Thinker** is a multimodal reasoning model in ServiceNow’s Apriel SLM series which achieves competitive performance against models 10 times it's size. Apriel-1.5 is the second model in the reasoning series. It introduces enhanced textual reasoning capabilities and adds image reasoning support to the previous text model. It has undergone extensive continual pretraining across both text and image domains. In terms of post-training this model has undergone text-SFT only. Our research demonstrates that with a strong mid-training regimen, we are able to achive SOTA performance on text and image reasoning tasks without having any image SFT training or RL.
+**Apriel-1.6-15B-Thinker** is an updated multimodal reasoning model in ServiceNow’s Apriel SLM series, building on [**Apriel-1.5-15B-Thinker**](https://huggingface.co/ServiceNow-AI/Apriel-1.5-15b-Thinker).
+
+With significantly improved text and image reasoning capabilities, Apriel-1.6 achieves competitive performance against models up to 10x its size.
+Like its predecessor, it benefits from extensive continual pre-training across both text and image domains.
+We additionally perform post-training that focuses on Supervised Finetuning (SFT) and Reinforcement Learning (RL).
+Apriel-1.6 obtains frontier performance without sacrificing reasoning token efficiency.
+The model improves or maintains task performance when compared with Apriel-1.5-15B-Thinker, while **reducing reasoning token usage by more than 30\%**.
 
 ## Highlights
 
-- Achieves a score of 52 on the Artificial Analysis index and is competitive with Deepseek R1 0528, Gemini-Flash etc.
-- It is AT LEAST 1 / 10 the size of any other model that scores > 50 on the Artificial Analysis index.
-- Scores 68 on Tau2 Bench Telecom and 62 on IFBench, which are key benchmarks for the enterprise domain.
+- Achieves a score of **57** on the Artificial Analysis index outperforming models like Gemini 2.5 Flash, Claude Haiku 4.5 and GPT OSS 20b. It obtains a score on par with Qwen3 235B A22B, while being significantly more efficient.
+- **Reduces reasoning token usage by more than 30%**, delivering significantly better efficiency than Apriel-1.5-15B-Thinker.
+- Scores **69** on Tau2 Bench Telecom and **69** on IFBench, which are key benchmarks for the enterprise domain.
 - At 15B parameters, the model fits on a single GPU, making it highly memory-efficient.
+- Based on community feedback on Apriel-1.5-15B-Thinker, we simplified the chat template by removing redundant tags and introduced four special tokens to the tokenizer (`<tool_calls>`, `</tool_calls>`, `[BEGIN FINAL RESPONSE]`, `<|end|>`) for easier output parsing.
+
+Please see our [blog post](https://huggingface.co/blog/ServiceNow-AI/apriel-1p6-15b-thinker) for more details
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 40
 - Repeat Penalty: 1.1
 - Min P Sampling: 0.05
@@ -40,8 +49,8 @@
 
 ## Performance
 
-- Thought for/first token after: ~2min / ~4min
-- Tokens per second (T-SQL/C#): 50.19 / 49.07
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 

@@ -10,7 +10,7 @@ Achieves 68.0% on SWE-Bench Verified and 55.7% on SWE-Bench Multilingual while r
 
 ## Model Inference Parameters
 
-- Temperature: 0.15
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0
@@ -35,8 +35,8 @@ Achieves 68.0% on SWE-Bench Verified and 55.7% on SWE-Bench Multilingual while r
 
 ## Performance
 
-- Thought for/first token after: 3.15s / 2.64s
-- Tokens per second (T-SQL/C#): 10.64 / 8.16
+- Thought for/first token after: ??? / ???
+- Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
 
