@@ -23,6 +23,8 @@
     -- usp_ActivityRetrieveForList 501f84e3-726d - d9aebcbecfbdbfaeabebbdcfdcabdcfe -- Description: Retrieve Activity record for list. Input parameters include all columns except Updat edDateTim e, UpdatedByUser ,UpdatedByProgram .
     ```
 
+For the reasons above, this model has been dropped from this repo until I figure out why it's failing so bad.
+
 ## mistralai/codestral-22b-v0.1
 
 - Didn't validate the input parameters as instructed.

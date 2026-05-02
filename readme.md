@@ -30,7 +30,7 @@
 
 This study systematically evaluates the performance of 20 large language models (LLMs) in generating production-ready SQL stored procedures and corresponding .NET full-stack application components. The benchmark reveals significant variations in code quality, contextual handling, and adherence to explicit technical requirements. Notably, the models demonstrated divergent approaches to critical implementation challenges, including input parameter validation, error handling mechanisms, SQL syntax correctness, and code organization. The most consistent pattern across models was inadequate handling of SQL reserved words without proper bracketing—only the Qwen models maintained this best practice for Microsoft SQL Server environments. Context limitations emerged as a critical constraint, with several models (particularly the 15B-thinker model) experiencing output truncation due to exceeding context window sizes during complex code generation tasks.
 
-The analysis identified two models with particularly strong performance characteristics: the OpenAI gpt-oss-20b model demonstrated exceptional output quality through comprehensive documentation, appropriate SQL syntax (using square brackets for column names), and a well-structured folder hierarchy for .NET implementation. The Qwen family (particularly qwen3-4b-thinking-2507) emerged as the most comprehensive generator, producing well-organized code with proper error handling and Bootstrap integration for Razor pages. Conversely, several models exhibited critical failures in production readiness, including insufficient input validation, inadequate error handling, and incomplete implementation of requested components—particularly the CodeGemma-7b model which hallucinated Python solutions for SQL tasks and crashed mid-generation.
+The analysis identified two models with particularly strong performance characteristics: the OpenAI gpt-oss-20b model demonstrated exceptional output quality through comprehensive documentation, appropriate SQL syntax (using square brackets for column names), and a well-structured folder hierarchy for .NET implementation. The Qwen family (particularly qwen3-4b-thinking-2507) emerged as the most comprehensive generator, producing well-organized code with proper error handling and Bootstrap integration for Razor pages. Conversely, several models exhibited critical failures in production readiness, including insufficient input validation, inadequate error handling, and incomplete implementation of requested components—particularly the CodeGemma-7b model which hallucinated Python solutions for SQL tasks and crashed mid-generation - this model has been since dropped from this repo until I figure out what's going on with it.
 
 These findings underscore the significant challenges in deploying LLMs for production code generation. The results indicate that while technical capability can be strong, successful implementation requires addressing context limitations, maintaining strict adherence to database-specific syntax conventions, and implementing robust error handling mechanisms. Future work should prioritize model fine-tuning specifically for database operations and .NET ecosystem requirements, with particular attention to the generation of production-grade code that avoids common pitfalls in parameter validation and error management. The benchmark also highlights that context window management remains a critical factor in successful complex code generation tasks.
 
@@ -112,12 +112,11 @@ This configuration represents a typical high-end local development environment f
 
 ### LLM Models Chosen
 
-The benchmark evaluated 21 models across different categories:
+The benchmark evaluated 20 models across different categories:
 
 1. Specialized Coding Models
 
     - [deepseek/deepseek-coder-v2-lite-instruct](/deepseek-coder-v2-lite-instruct/readme.md)
-    - [google/codegemma-7b](/codegemma-7b-GGUF/readme.md)
     - [mistralai/codestral-22b-v01](/codestral-22b-v0.1/readme.md)
     - [nousresearch/nouscoder-14b](/nouscoder-14b/readme.md)
     - [qwen/qwen2.5-coder-14b](/qwen2.5-coder-14b/readme.md)
@@ -127,7 +126,6 @@ The benchmark evaluated 21 models across different categories:
 2. General Purpose Models
 
     - [cohere/command-a-03-2025](/command-a-03-2025/readme.md)
-    - [google/gemma-3-12b](/codegemma-7b-GGUF/readme.md)
     - [ibm/granite-4-h-tiny](/granite-4-h-tiny/readme.md)
     - [microsoft/phi-4-reasoning-plus](/phi-4-reasoning-plus/readme.md)
     - [mistralai/ministral-3-14b-reasoning](/ministral-3-14b-reasoning/readme.md)
