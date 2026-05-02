@@ -115,7 +115,7 @@ app.MapDelete("/activities/{id:guid}", async (Guid id, IActivityRepository repo)
     if (activity == null)
         return Results.NotFound();
 
-    // Soft delete – set flags instead of hard delete
+    // Soft delete - set flags instead of hard delete
     activity.ActiveFlag = 0;
     activity.SystemDeleteFlag = 'Y';
     repo.Update(activity);

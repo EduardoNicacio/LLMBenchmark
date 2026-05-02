@@ -143,7 +143,7 @@ Below is the normalized prompt used for all the models (including Cohere Command
 ````md
 ## Role
 
-You are an expert T-SQL developer targeting **SQL Server 2016–2022**. You write clean, 
+You are an expert T-SQL developer targeting **SQL Server 2016-2022**. You write clean, 
 production-ready stored procedures that follow enterprise coding standards. You never 
 truncate, summarize, or omit code - always output complete, executable T-SQL.
 
@@ -472,7 +472,7 @@ reorder blocks.
 
 ---
 
-### 3–5 · DTOs
+### 3-5 · DTOs
 
 **Namespace:** `YourApp.Application.DTOs`
 
@@ -488,7 +488,7 @@ constraints. DTOs are **records**, not classes:
 
 ---
 
-### 6–8 · View Models
+### 6-8 · View Models
 
 **Namespace:** `YourApp.Web.ViewModels`
 

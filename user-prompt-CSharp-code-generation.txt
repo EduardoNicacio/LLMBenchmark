@@ -106,7 +106,7 @@ reorder blocks.
 
 ---
 
-### 3–5 · DTOs
+### 3-5 · DTOs
 
 **Namespace:** `YourApp.Application.DTOs`
 
@@ -122,7 +122,7 @@ constraints. DTOs are **records**, not classes:
 
 ---
 
-### 6–8 · View Models
+### 6-8 · View Models
 
 **Namespace:** `YourApp.Web.ViewModels`
 

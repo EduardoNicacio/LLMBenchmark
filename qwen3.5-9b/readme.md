@@ -17,7 +17,7 @@ Qwen3.5 represents a significant leap forward, integrating breakthroughs in mult
 ## Model Inference Parameters
 
 - Thinking: enabled
-- Temperature: 1.0
+- Temperature: 0.1
 - Top K Sampling: 20
 - Repeat Penalty: off
 - Min P Sampling: 0.0

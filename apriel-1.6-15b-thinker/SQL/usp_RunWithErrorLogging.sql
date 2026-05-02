@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------
-   Centralised TRY...CATCH helper – can be used inside any proc.
+   Centralised TRY...CATCH helper - can be used inside any proc.
 -------------------------------------------------------------- */
 CREATE OR ALTER PROCEDURE dbo.RunWithErrorLogging
     @OperationName sysname   -- e.g. 'INSERT', 'UPDATE', 'SELECT'

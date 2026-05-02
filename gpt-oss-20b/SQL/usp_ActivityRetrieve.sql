@@ -22,11 +22,11 @@ CREATE OR ALTER PROCEDURE dbo.usp_ActivityRetrieve
     @Risk              tinyint          = NULL,
     @Tags              nvarchar(200)    = NULL,
 
-    /* Flags – default values are used for filtering */
+    /* Flags - default values are used for filtering */
     @ActiveFlag        tinyint           = 1,      -- default to active
     @SystemDeleteFlag  char(1)           = 'N',    -- default to non‑deleted
 
-    /* Audit columns – not part of the search criteria */
+    /* Audit columns - not part of the search criteria */
     @CreatedDateTime   datetime2(7)       = NULL,
     @UpdatedDateTime   datetime2(7)       = NULL,   -- ignored
     @UpdatedByUser     nvarchar(100)      = NULL,   -- ignored
@@ -93,7 +93,7 @@ BEGIN
            AND (@Description     IS NULL OR CHARINDEX(@Description,[Description],0) > 0)
            AND (@Tags            IS NULL OR CHARINDEX(@Tags,       Tags, 0) > 0)
 
-           /* Date range pattern – inclusive of the day */
+           /* Date range pattern - inclusive of the day */
            AND (@StartDate        IS NULL OR (StartDate >= @StartDate AND StartDate < DATEADD(day,1,@StartDate)))
            AND (@TargetDate       IS NULL OR (TargetDate >= @TargetDate AND TargetDate < DATEADD(day,1,@TargetDate)))
            AND (@EndDate          IS NULL OR (EndDate >= @EndDate AND EndDate < DATEADD(day,1,@EndDate)))
@@ -104,7 +104,7 @@ BEGIN
            AND (@Priority         IS NULL OR Priority     = @Priority)
            AND (@Risk             IS NULL OR Risk         = @Risk)
 
-           /* Flag filters – defaults are used for filtering */
+           /* Flag filters - defaults are used for filtering */
            AND ActiveFlag        = @ActiveFlag
            AND SystemDeleteFlag  = @SystemDeleteFlag
 

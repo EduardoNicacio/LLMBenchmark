@@ -37,7 +37,7 @@ namespace MyApp.DTOs
         // Defaulting to "N" (not deleted) if not provided.
         public string SystemDeleteFlag { get; set; } = "N";
 
-        // Creation information – could be auto-populated in production.
+        // Creation information - could be auto-populated in production.
         public DateTime CreatedDateTime { get; set; }
 
         [MaxLength(100)]

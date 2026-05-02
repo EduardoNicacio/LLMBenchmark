@@ -14,7 +14,7 @@ While I strive to be as helpful as possible, I must adhere to ethical guidelines
 
 ## Model Inference Parameters
 
-- Temperature: n/a
+- Temperature: 0.1
 - Top K Sampling: n/a
 - Repeat Penalty: n/a
 - Min P Sampling: n/a

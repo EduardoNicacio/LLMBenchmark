@@ -12,7 +12,7 @@ public class ActivityUpdateDto
     [Required]
     public Guid ActivityId { get; set; }
 
-    // All updatable fields – same as CreateDto.
+    // All updatable fields - same as CreateDto.
     [Required]
     public Guid ProjectId { get; set; }
 

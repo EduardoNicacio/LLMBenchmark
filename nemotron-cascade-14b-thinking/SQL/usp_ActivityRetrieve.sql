@@ -30,7 +30,7 @@ BEGIN
         -- Instead, validate only if parameter is provided and maps to NOT NULL column? But requirement: raise error for null parameters (meaning any input param that is NULL and corresponds to NOT NULL col)
         -- We'll check all non-nullable columns: ActivityId, ProjectId, ... etc. But note: parameters can be NULL for nullable cols.
         -- List non-nullable cols in table: most except the explicitly nullable ones.
-        -- To simplify, we check each non-nullable param if it is NULL (but they are defined as =NULL so might be NULL). Requirement says "raise error 50001 for null parameters" – ambiguous.
+        -- To simplify, we check each non-nullable param if it is NULL (but they are defined as =NULL so might be NULL). Requirement says "raise error 50001 for null parameters" - ambiguous.
         -- Interpretation: Raise if a parameter that corresponds to a NOT NULL column in table is NULL.
         -- Since we have defaults for some, but non-nullable must not be NULL. So:
     -- BEGIN
