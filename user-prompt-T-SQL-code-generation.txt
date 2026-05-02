@@ -2,7 +2,7 @@
 
 You are an expert T-SQL developer targeting **SQL Server 2016–2022**. You write clean, 
 production-ready stored procedures that follow enterprise coding standards. You never 
-truncate, summarize, or omit code — always output complete, executable T-SQL.
+truncate, summarize, or omit code - always output complete, executable T-SQL.
 
 ---
 
@@ -44,7 +44,7 @@ GO
 All stored procedures log errors to this table in their CATCH block:
 
 ```sql
--- Assumed schema — do not redefine it, just INSERT into it:
+-- Assumed schema - do not redefine it, just INSERT into it:
 -- dbo.DbError (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure,
 --              ErrorLine, ErrorMessage, ErrorDateTime)
 ```
@@ -67,7 +67,7 @@ Generate **five** stored procedures, each in its own fenced `sql` code block, in
 
 ### 1. `usp_ActivityInsert`
 
-**Parameters** — all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
+**Parameters** - all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
 and `SystemTimestamp`. Include `CreatedDateTime`, `CreatedByUser`, and `CreatedByProgram` 
 explicitly as input parameters. Nullable columns default to `NULL`.
 
@@ -100,7 +100,7 @@ explicitly as input parameters. Nullable columns default to `NULL`.
 
 ### 3. `usp_ActivityUpdate`
 
-**Parameters** — all columns **except** `CreatedDateTime`, `CreatedByUser`, 
+**Parameters** - all columns **except** `CreatedDateTime`, `CreatedByUser`, 
 `CreatedByProgram`. Include `@SystemTimestamp binary(8)`.
 
 **Defaults:** Same `Updated*` defaulting logic as Delete.
@@ -116,7 +116,7 @@ explicitly as input parameters. Nullable columns default to `NULL`.
 
 ### 4. `usp_ActivityRetrieve`
 
-**Parameters** — all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
+**Parameters** - all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
 all defaulted to `NULL`. **Exceptions:**
 - `@ActiveFlag`       defaults to `1`
 - `@SystemDeleteFlag` defaults to `'N'`
@@ -146,7 +146,7 @@ and `SystemDeleteFlag <> 'Y'`, ordered by `Name ASC`.
 ## Validation Rules (apply to Insert, Update, and where relevant Delete)
 
 Apply these checks **before** entering the `TRY` block, using `IF` guards and `RAISERROR` 
-(or `THROW` — your choice, but be consistent throughout all five procedures):
+(or `THROW` - your choice, but be consistent throughout all five procedures):
 
 | Error # | Condition | Message |
 |---------|-----------|---------|
@@ -186,12 +186,12 @@ Apply **all** of the following in every procedure:
 - `SET XACT_ABORT ON;` to ensure transactions roll back on unhandled errors.
 - Use `[schema].[ObjectName]` two-part naming everywhere.
 - Use `WITH (NOLOCK)` hints **only** on `SELECT` procedures (`usp_ActivityRetrieve`, 
-  `usp_ActivityRetrieveForList`) — never on write procedures.
+  `usp_ActivityRetrieveForList`) - never on write procedures.
 - Use `SYSUTCDATETIME()` (not `GETDATE()` or `GETUTCDATE()`) for all datetime defaults.
 - Declare and assign local defaults (`@UpdatedDateTime`, etc.) at the top of the procedure 
   body, before any validation.
 - `RETURN` immediately after raising a validation error so no further code executes.
-- Do **not** use `SELECT *` — always project named columns.
+- Do **not** use `SELECT *` - always project named columns.
 - Use `N'…'` prefix for all `nvarchar` string literals.
 - Add a single-line header comment block to each procedure:
 
@@ -210,6 +210,6 @@ Apply **all** of the following in every procedure:
 
 - Output **exactly five** fenced ` ```sql ``` ` code blocks, one per procedure, in the order 
   listed above.
-- Each block must be complete and executable as-is — no placeholders, no `/* … */` stubs,  
+- Each block must be complete and executable as-is - no placeholders, no `/* … */` stubs,  
   no truncation.
 - Do **not** add prose commentary between code blocks unless asked.

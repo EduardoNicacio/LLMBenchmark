@@ -8,7 +8,7 @@ The latest generation vision-language model in the Qwen series with comprehensiv
 
 ## Key Features
 
-- Visual Agent: Operates PC and mobile GUIs—recognizes elements, understands functions, and completes tasks
+- Visual Agent: Operates PC and mobile GUIs-recognizes elements, understands functions, and completes tasks
 - Visual Coding: Generates Draw.io, HTML, CSS, and JavaScript from images and videos
 - Advanced Spatial Perception: Provides 2D/3D grounding for spatial reasoning and embodied AI applications
 - Upgraded Recognition: Recognizes celebrities, anime, products, landmarks, flora, fauna, and more

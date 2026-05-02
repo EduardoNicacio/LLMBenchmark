@@ -8,7 +8,7 @@
 
 ## Highlights
 
-- Permissive Apache 2.0 license: Build freely without copyleft restrictions or patent risk—ideal for experimentation, customization, and commercial deployment.
+- Permissive Apache 2.0 license: Build freely without copyleft restrictions or patent risk-ideal for experimentation, customization, and commercial deployment.
 - Configurable reasoning effort: Easily adjust the reasoning effort (low, medium, high) based on your specific use case and latency needs.
 - Full chain-of-thought: Gain complete access to the model’s reasoning process, facilitating easier debugging and increased trust in outputs. It’s not intended to be shown to end users.
 - Fine-tunable: Fully customize models to your specific use case through parameter fine-tuning.

@@ -28,9 +28,9 @@
 
 ## Abstract
 
-This study systematically evaluates the performance of 20 large language models (LLMs) in generating production-ready SQL stored procedures and corresponding .NET full-stack application components. The benchmark reveals significant variations in code quality, contextual handling, and adherence to explicit technical requirements. Notably, the models demonstrated divergent approaches to critical implementation challenges, including input parameter validation, error handling mechanisms, SQL syntax correctness, and code organization. The most consistent pattern across models was inadequate handling of SQL reserved words without proper bracketing—only the Qwen models maintained this best practice for Microsoft SQL Server environments. Context limitations emerged as a critical constraint, with several models (particularly the 15B-thinker model) experiencing output truncation due to exceeding context window sizes during complex code generation tasks.
+This study systematically evaluates the performance of 20 large language models (LLMs) in generating production-ready SQL stored procedures and corresponding .NET full-stack application components. The benchmark reveals significant variations in code quality, contextual handling, and adherence to explicit technical requirements. Notably, the models demonstrated divergent approaches to critical implementation challenges, including input parameter validation, error handling mechanisms, SQL syntax correctness, and code organization. The most consistent pattern across models was inadequate handling of SQL reserved words without proper bracketing-only the Qwen models maintained this best practice for Microsoft SQL Server environments. Context limitations emerged as a critical constraint, with several models (particularly the 15B-thinker model) experiencing output truncation due to exceeding context window sizes during complex code generation tasks.
 
-The analysis identified two models with particularly strong performance characteristics: the OpenAI gpt-oss-20b model demonstrated exceptional output quality through comprehensive documentation, appropriate SQL syntax (using square brackets for column names), and a well-structured folder hierarchy for .NET implementation. The Qwen family (particularly qwen3-4b-thinking-2507) emerged as the most comprehensive generator, producing well-organized code with proper error handling and Bootstrap integration for Razor pages. Conversely, several models exhibited critical failures in production readiness, including insufficient input validation, inadequate error handling, and incomplete implementation of requested components—particularly the CodeGemma-7b model which hallucinated Python solutions for SQL tasks and crashed mid-generation - this model has been since dropped from this repo until I figure out what's going on with it.
+The analysis identified two models with particularly strong performance characteristics: the OpenAI gpt-oss-20b model demonstrated exceptional output quality through comprehensive documentation, appropriate SQL syntax (using square brackets for column names), and a well-structured folder hierarchy for .NET implementation. The Qwen family (particularly qwen3-4b-thinking-2507) emerged as the most comprehensive generator, producing well-organized code with proper error handling and Bootstrap integration for Razor pages. Conversely, several models exhibited critical failures in production readiness, including insufficient input validation, inadequate error handling, and incomplete implementation of requested components-particularly the CodeGemma-7b model which hallucinated Python solutions for SQL tasks and crashed mid-generation - this model has been since dropped from this repo until I figure out what's going on with it.
 
 These findings underscore the significant challenges in deploying LLMs for production code generation. The results indicate that while technical capability can be strong, successful implementation requires addressing context limitations, maintaining strict adherence to database-specific syntax conventions, and implementing robust error handling mechanisms. Future work should prioritize model fine-tuning specifically for database operations and .NET ecosystem requirements, with particular attention to the generation of production-grade code that avoids common pitfalls in parameter validation and error management. The benchmark also highlights that context window management remains a critical factor in successful complex code generation tasks.
 
@@ -112,40 +112,23 @@ This configuration represents a typical high-end local development environment f
 
 ### LLM Models Chosen
 
-The benchmark evaluated 20 models across different categories:
+The benchmark evaluated 22 models across different categories:
 
-1. Specialized Coding Models
+![alt text](/_img/image.png)
 
-    - [deepseek/deepseek-coder-v2-lite-instruct](/deepseek-coder-v2-lite-instruct/readme.md)
-    - [mistralai/codestral-22b-v01](/codestral-22b-v0.1/readme.md)
-    - [nousresearch/nouscoder-14b](/nouscoder-14b/readme.md)
-    - [qwen/qwen2.5-coder-14b](/qwen2.5-coder-14b/readme.md)
-    - [mistralai/devstral-small-2507](/devstral-small-2507/readme.md)
-    - [mistralai/devstral-small2-2512](/devstral-small2-2512/readme.md)
+A few classification notes worth flagging for this benchmarking setup:
 
-2. General Purpose Models
+**Boundary cases**. Three models sit between categories and are worth treating as a distinct sub-group in this analysis:
 
-    - [cohere/command-a-03-2025](/command-a-03-2025/readme.md)
-    - [ibm/granite-4-h-tiny](/granite-4-h-tiny/readme.md)
-    - [microsoft/phi-4-reasoning-plus](/phi-4-reasoning-plus/readme.md)
-    - [mistralai/ministral-3-14b-reasoning](/ministral-3-14b-reasoning/readme.md)
-    - [openai/gpt-oss-20b](/gpt-oss-20b/readme.md)
-    - [qwen/qwen3-4b-2507](/qwen3.5-9b/readme.md)
-    - [qwen/qwen3.5-9b](/qwen3-4b-2507/readme.md)
-    - [meta-ai/llama-3.1-8b-instruct](/llama-3.1-8b-instruct/readme.md)
-    - [servicenow-ai/apriel-1.6-15b-thinker](/apriel-1.6-15b-thinker/readme.md)
+- `nemotron-opencodereasoning-14b` straddles specialized coding and reasoning variants - it is a code model with an explicit chain-of-thought training objective, so it may behave differently from pure code models like qwen2.5-coder-14b on T-SQL generation.
+- `phi-4-reasoning-plus` is Microsoft's reasoning-enhanced variant of phi-4, which was itself heavily trained on synthetic code and math data. It will likely punch above its weight on SQL and C# despite not being a "code model" by name.
+- `apriel-1.6-15b-thinker` is ServiceNow's enterprise-domain thinker - its training data likely skews toward IT workflows, so it may have above-average familiarity with enterprise patterns (like stored procedures, EF Core, etc.) compared to other general models.
 
-3. Specialized Variants
+**Multimodal models in a code benchmark**. `glm-4.6v-flash` and `qwen3-VL-8b` include vision capability but their text-only performance is generally comparable to equivalently-sized general models. They won't be penalized on pure text prompts, but their code-specific tuning is minimal - expect them to cluster near the bottom of the coding results alongside the general-purpose group.
 
-    - [qwen/qwen3-4b-thinking-2507](/qwen3-4b-thinking-2507/readme.md)
-    - [nvidia/nemotron-cascade-14b-thinking](/nemotron-cascade-14b-thinking/readme.md)
-    - [nvidia/acereason-nemotron-14b](/nemotron-acereason-14b/readme.md)
-    - [nvidia/opencodereasoning-nemotron-14b](/nemotron-opencodereasoning-14b/readme.md)
-    - [zai-org/glm-4.6v-flash](/glm-4.6v-flash/readme.md)
+**Expected competitive tier for T-SQL and C# tasks**. Based on architecture and training focus, the models most likely to lead are: `codestral-22b-v0.1`, `qwen2.5-coder-14b`, `nemotron-opencodereasoning-14b`, `deepseek-coder-v2-lite-instruct`, and `devstral-small-2507/devstral-small2-2512` - with `phi-4-reasoning-plus` and `nemotron-cascade-14b-thinking` as the strongest challengers from outside the coding category.
 
-4. Multimodal Specialized Models
-
-    - [qwen/qwen3-VL-8b](/qwen3-VL-8b/readme.md)
+---
 
 This methodology directly addresses one's one-pass constraint while ensuring meaningful results. By standardizing the prompt and evaluation criteria, one can fairly compare models without introducing bias from prompt variations. The focus on specific failure points (like the SQL reserved words issue highlighted in the document) ensures one captures the most critical weaknesses that affect real-world deployment.
 
@@ -162,7 +145,7 @@ Below is the normalized prompt used for all the models (including Cohere Command
 
 You are an expert T-SQL developer targeting **SQL Server 2016–2022**. You write clean, 
 production-ready stored procedures that follow enterprise coding standards. You never 
-truncate, summarize, or omit code — always output complete, executable T-SQL.
+truncate, summarize, or omit code - always output complete, executable T-SQL.
 
 ---
 
@@ -204,7 +187,7 @@ GO
 All stored procedures log errors to this table in their CATCH block:
 
 ```sql
--- Assumed schema — do not redefine it, just INSERT into it:
+-- Assumed schema - do not redefine it, just INSERT into it:
 -- dbo.DbError (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure,
 --              ErrorLine, ErrorMessage, ErrorDateTime)
 ```
@@ -227,7 +210,7 @@ Generate **five** stored procedures, each in its own fenced `sql` code block, in
 
 ### 1. `usp_ActivityInsert`
 
-**Parameters** — all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
+**Parameters** - all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
 and `SystemTimestamp`. Include `CreatedDateTime`, `CreatedByUser`, and `CreatedByProgram` 
 explicitly as input parameters. Nullable columns default to `NULL`.
 
@@ -260,7 +243,7 @@ explicitly as input parameters. Nullable columns default to `NULL`.
 
 ### 3. `usp_ActivityUpdate`
 
-**Parameters** — all columns **except** `CreatedDateTime`, `CreatedByUser`, 
+**Parameters** - all columns **except** `CreatedDateTime`, `CreatedByUser`, 
 `CreatedByProgram`. Include `@SystemTimestamp binary(8)`.
 
 **Defaults:** Same `Updated*` defaulting logic as Delete.
@@ -276,7 +259,7 @@ explicitly as input parameters. Nullable columns default to `NULL`.
 
 ### 4. `usp_ActivityRetrieve`
 
-**Parameters** — all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
+**Parameters** - all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
 all defaulted to `NULL`. **Exceptions:**
 - `@ActiveFlag`       defaults to `1`
 - `@SystemDeleteFlag` defaults to `'N'`
@@ -306,7 +289,7 @@ and `SystemDeleteFlag <> 'Y'`, ordered by `Name ASC`.
 ## Validation Rules (apply to Insert, Update, and where relevant Delete)
 
 Apply these checks **before** entering the `TRY` block, using `IF` guards and `RAISERROR` 
-(or `THROW` — your choice, but be consistent throughout all five procedures):
+(or `THROW` - your choice, but be consistent throughout all five procedures):
 
 | Error # | Condition | Message |
 |---------|-----------|---------|
@@ -346,12 +329,12 @@ Apply **all** of the following in every procedure:
 - `SET XACT_ABORT ON;` to ensure transactions roll back on unhandled errors.
 - Use `[schema].[ObjectName]` two-part naming everywhere.
 - Use `WITH (NOLOCK)` hints **only** on `SELECT` procedures (`usp_ActivityRetrieve`, 
-  `usp_ActivityRetrieveForList`) — never on write procedures.
+  `usp_ActivityRetrieveForList`) - never on write procedures.
 - Use `SYSUTCDATETIME()` (not `GETDATE()` or `GETUTCDATE()`) for all datetime defaults.
 - Declare and assign local defaults (`@UpdatedDateTime`, etc.) at the top of the procedure 
   body, before any validation.
 - `RETURN` immediately after raising a validation error so no further code executes.
-- Do **not** use `SELECT *` — always project named columns.
+- Do **not** use `SELECT *` - always project named columns.
 - Use `N'…'` prefix for all `nvarchar` string literals.
 - Add a single-line header comment block to each procedure:
 
@@ -370,7 +353,7 @@ Apply **all** of the following in every procedure:
 
 - Output **exactly five** fenced ` ```sql ``` ` code blocks, one per procedure, in the order 
   listed above.
-- Each block must be complete and executable as-is — no placeholders, no `/* … */` stubs,  
+- Each block must be complete and executable as-is - no placeholders, no `/* … */` stubs,  
   no truncation.
 - Do **not** add prose commentary between code blocks unless asked.
 
@@ -386,7 +369,7 @@ Below is the normalized prompt used for all the models, including Cohere Command
 You are a senior .NET developer targeting **.NET 8** and **C# 12**. You write complete,
 production-ready code that follows enterprise coding standards, SOLID principles, and
 Microsoft's ASP.NET Core conventions. You never truncate, summarize, or use placeholder
-comments such as `// ... rest of implementation` — every code block must be fully
+comments such as `// ... rest of implementation` - every code block must be fully
 executable as written.
 
 ---
@@ -469,7 +452,7 @@ reorder blocks.
 - Place in namespace `YourApp.Domain.Entities`.
 - Apply `[Table("Activity", Schema = "dbo")]`.
 - Map every column with explicit `[Column]`, `[MaxLength]`, and `[Required]` attributes
-  where appropriate — do not rely on conventions alone.
+  where appropriate - do not rely on conventions alone.
 - Mark `SystemTimestamp` as a concurrency token:
   `[Timestamp] public byte[] SystemTimestamp { get; set; } = null!;`
 - Do **not** add EF navigation properties unless explicitly asked.
@@ -496,7 +479,7 @@ reorder blocks.
 | DTO | Includes | Excludes |
 |-----|----------|----------|
 | `ActivityCreateDto` | All writable columns | `ActivityId`, `SystemTimestamp`, `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram` |
-| `ActivityUpdateDto` | All writable columns | `CreatedDateTime`, `CreatedByUser`, `CreatedByProgram`, `SystemTimestamp` — but **include** `SystemTimestamp` as `byte[]` for optimistic concurrency |
+| `ActivityUpdateDto` | All writable columns | `CreatedDateTime`, `CreatedByUser`, `CreatedByProgram`, `SystemTimestamp` - but **include** `SystemTimestamp` as `byte[]` for optimistic concurrency |
 | `ActivityReadDto` | All columns | `SystemTimestamp` (internal; never expose to client) |
 
 Apply `[Required]`, `[MaxLength]`, and `[Range]` annotations mirroring the entity
@@ -553,7 +536,7 @@ Task<IReadOnlyList<Activity>> GetActiveAsync(CancellationToken ct = default)
 `ActivityRepository : Repository<Activity>, IActivityRepository` implements both.
 
 - Soft-delete override: `DeleteAsync` must set `SystemDeleteFlag = "Y"` and
-  `UpdatedDateTime = DateTime.UtcNow` — it must **not** physically remove the row.
+  `UpdatedDateTime = DateTime.UtcNow` - it must **not** physically remove the row.
 - Filter `GetAllAsync` and `GetActiveAsync` to exclude `SystemDeleteFlag = "Y"` rows.
 
 ---
@@ -650,9 +633,9 @@ Use `[SetUp]` to reset in-memory DB state between tests.
 Apply **all** of the following across every generated file:
 
 - Target framework: `.NET 8`; language version: `C# 12`.
-- `nullable enable` at the project level — no `#nullable` pragmas needed; just ensure
+- `nullable enable` at the project level - no `#nullable` pragmas needed; just ensure
   all reference types are correctly annotated (`string?`, `T?`, `null!`).
-- Follow **Result pattern** for repository error returns — do not throw exceptions for
+- Follow **Result pattern** for repository error returns - do not throw exceptions for
   expected business errors (not-found, concurrency); only throw for truly unexpected
   failures.
 - Use `sealed` on all records and on concrete classes that are not designed for
@@ -663,7 +646,7 @@ Apply **all** of the following across every generated file:
 - Register all services in a static `IServiceCollection` extension method per layer
   (e.g., `AddInfrastructure(this IServiceCollection services, IConfiguration config)`).
 - Never use `var` where the type is not immediately obvious from the right-hand side.
-- Do not use `AutoMapper` — write explicit projection methods (`ToDto()`, `ToEntity()`)
+- Do not use `AutoMapper` - write explicit projection methods (`ToDto()`, `ToEntity()`)
   as `static` extension methods in a `ActivityMappingExtensions.cs` file (add this as
   **Component 0**, before the entity).
 
@@ -672,7 +655,7 @@ Apply **all** of the following across every generated file:
 ## Output Format
 
 - Output **exactly fourteen** (or fifteen, if you include the mapping extensions) fenced code blocks, one per component, in the order listed in the table above.
-- Each block must be complete and directly compilable — no stubs, no `TODO` comments, no ellipses.
+- Each block must be complete and directly compilable - no stubs, no `TODO` comments, no ellipses.
 - Use ` ```csharp ``` ` for C# files and ` ```html ``` ` for `.cshtml` files.
 - Add a single line before each block with the file name, e.g.:
   `**`ActivityCreateDto.cs`**`
