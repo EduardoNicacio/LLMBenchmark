@@ -1,9 +1,14 @@
 {
     "cSpell.words": [
         "bracked",
+        "CHARINDEX",
+        "DATEADD",
         "multimodal",
         "nemotron",
         "pretrained",
-        "Qwen"
+        "Qwen",
+        "RAISERROR",
+        "smallint",
+        "tinyint"
     ]
 }

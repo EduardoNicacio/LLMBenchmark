@@ -1,88 +1,215 @@
-Task:
+## Role
 
-Generate SQL stored procedures for the Activity table below based on the following requirements. Use T-SQL syntax and ensure the code is production-ready.
+You are an expert T-SQL developer targeting **SQL Server 2016–2022**. You write clean, 
+production-ready stored procedures that follow enterprise coding standards. You never 
+truncate, summarize, or omit code — always output complete, executable T-SQL.
 
-Table Definition:
+---
 
-CREATE TABLE [dbo].[Activity](
-    [ActivityId] [uniqueidentifier] NOT NULL,
-    [ProjectId] [uniqueidentifier] NOT NULL,
-    [ProjectMemberId] [uniqueidentifier] NOT NULL,
-    [Name] [nvarchar](128) NOT NULL,
-    [Description] [nvarchar](4000) NOT NULL,
-    [StartDate] [date] NULL,
-    [TargetDate] [date] NULL,
-    [EndDate] [date] NULL,
-    [ProgressStatus] [tinyint] NULL,
-    [ActivityPoints] [smallint] NULL,
-    [Priority] [tinyint] NULL,
-    [Risk] [tinyint] NULL,
-    [Tags] [nvarchar](200) NULL,
-    [ActiveFlag] [tinyint] NOT NULL,
-    [SystemDeleteFlag] [char](1) NOT NULL,
-    [CreatedDateTime] [datetime2](7) NOT NULL,
-    [CreatedByUser] [nvarchar](100) NOT NULL,
-    [CreatedByProgram] [nvarchar](100) NOT NULL,
-    [UpdatedDateTime] [datetime2](7) NULL,
-    [UpdatedByUser] [nvarchar](100) NULL,
-    [UpdatedByProgram] [nvarchar](100) NULL,
-    [SystemTimestamp] [timestamp] NOT NULL,
+## Table Definition
+
+```sql
+CREATE TABLE [dbo].[Activity] (
+    [ActivityId]        [uniqueidentifier]  NOT NULL,
+    [ProjectId]         [uniqueidentifier]  NOT NULL,
+    [ProjectMemberId]   [uniqueidentifier]  NOT NULL,
+    [Name]              [nvarchar](128)     NOT NULL,
+    [Description]       [nvarchar](4000)    NOT NULL,
+    [StartDate]         [date]              NULL,
+    [TargetDate]        [date]              NULL,
+    [EndDate]           [date]              NULL,
+    [ProgressStatus]    [tinyint]           NULL,
+    [ActivityPoints]    [smallint]          NULL,
+    [Priority]          [tinyint]           NULL,
+    [Risk]              [tinyint]           NULL,
+    [Tags]              [nvarchar](200)     NULL,
+    [ActiveFlag]        [tinyint]           NOT NULL,
+    [SystemDeleteFlag]  [char](1)           NOT NULL,
+    [CreatedDateTime]   [datetime2](7)      NOT NULL,
+    [CreatedByUser]     [nvarchar](100)     NOT NULL,
+    [CreatedByProgram]  [nvarchar](100)     NOT NULL,
+    [UpdatedDateTime]   [datetime2](7)      NULL,
+    [UpdatedByUser]     [nvarchar](100)     NULL,
+    [UpdatedByProgram]  [nvarchar](100)     NULL,
+    [SystemTimestamp]   [timestamp]         NOT NULL,
     CONSTRAINT [PK_Activity_ActivityId] PRIMARY KEY CLUSTERED ([ActivityId] ASC)
 ) ON [PRIMARY];
 GO
+```
 
-Stored Procedures to Create:
+---
 
-usp_ActivityInsert:
+## Error Table Contract
 
-- Input parameters: All columns except UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp.
-- Explicitly include CreatedDateTime, CreatedByUser, and CreatedByProgram as input parameters.
-- Default nullable columns to NULL.
+All stored procedures log errors to this table in their CATCH block:
 
-usp_ActivityDelete:
+```sql
+-- Assumed schema — do not redefine it, just INSERT into it:
+-- dbo.DbError (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure,
+--              ErrorLine, ErrorMessage, ErrorDateTime)
+```
 
-- Input parameters: ActivityId, UpdatedDateTime, UpdatedByUser, UpdatedByProgram, and SystemTimestamp.
-- Soft-delete by setting SystemDeleteFlag = 'Y'.
-- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram to SYSUTCDATETIME(), SYSTEM_USER, and APP_NAME() if null.
-- Use SystemTimestamp for optimistic locking.
+---
 
-usp_ActivityUpdate:
+## Stored Procedures to Generate
 
-- Input parameters: All columns except CreatedDateTime, CreatedByUser, and CreatedByProgram.
-- Default UpdatedDateTime, UpdatedByUser, and UpdatedByProgram to SYSUTCDATETIME(), SYSTEM_USER, and APP_NAME() if null.
-- Use SystemTimestamp for optimistic locking.
+Generate **five** stored procedures, each in its own fenced `sql` code block, in this order:
 
-usp_ActivityRetrieve:
+1. `usp_ActivityInsert`
+2. `usp_ActivityDelete`
+3. `usp_ActivityUpdate`
+4. `usp_ActivityRetrieve`
+5. `usp_ActivityRetrieveForList`
 
-- Input parameters: All columns (defaulted to NULL), except UpdatedDateTime, UpdatedByUser, and UpdatedByProgram.
-- Default ActiveFlag to 1 and SystemDeleteFlag to 'N'.
-- Use wildcard search for varchar and nvarchar columns:
+---
 
-    (@Parameter IS NULL OR CHARINDEX(@Parameter, [Column], 0) > 0)
+## Procedure Specifications
 
-- Use date range search for date columns:
+### 1. `usp_ActivityInsert`
 
-    (@DateTimeParameter IS NULL OR DateTimeColumn >= @DateTimeParameter AND DateTimeColumn < DATEADD(day, 1, @DateTimeParameter))
+**Parameters** — all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
+and `SystemTimestamp`. Include `CreatedDateTime`, `CreatedByUser`, and `CreatedByProgram` 
+explicitly as input parameters. Nullable columns default to `NULL`.
 
-usp_ActivityRetrieveForList:
+**Logic:**
+- Validate inputs (see *Validation Rules* below).
+- `INSERT` the row inside a `TRY…CATCH` block.
+- On success, return the newly inserted `ActivityId` via `SELECT ActivityId`.
+- On error, log to `dbo.DbError` and raise error 50000.
 
-- Retrieve ActivityId and Name for active, non-deleted records (ActiveFlag = 1 and SystemDeleteFlag <> 'Y').
+---
 
-General Requirements for All Stored Procedures:
+### 2. `usp_ActivityDelete`
 
-- Validate input parameters for type, size, and nullability.
-- Raise error 50001 for null parameters.
-- Raise error 50002 for string parameters exceeding column length.
-- Raise error 50003 for invalid ActiveFlag (must be 0 or 1) or SystemDeleteFlag (must be 'N' or 'Y').
-- Wrap SELECT, INSERT, and UPDATE statements in a TRY...CATCH block.
-- Log errors to dbo.DbError table in the CATCH block.
-- Raise error 50000 with message: "Error occurred during [Operation] operation."
-- For optimistic lock violations, raise error 50004 with message:
+**Parameters:** `@ActivityId`, `@UpdatedDateTime`, `@UpdatedByUser`, `@UpdatedByProgram`, 
+`@SystemTimestamp binary(8)`.
 
-    "Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again."
+**Defaults:** If `NULL`, set:
+- `@UpdatedDateTime`  → `SYSUTCDATETIME()`
+- `@UpdatedByUser`    → `SYSTEM_USER`
+- `@UpdatedByProgram` → `APP_NAME()`
 
-- Enclose each stored procedure in a separate SQL code block.
+**Logic:**
+- Validate `@ActivityId` not null (error 50001).
+- Perform a soft delete: `SET SystemDeleteFlag = 'Y'` plus the three `Updated*` columns.
+- Use optimistic locking: `WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp`.
+- If `@@ROWCOUNT = 0`, raise error 50004 (optimistic lock message).
+- Wrap in `TRY…CATCH`; log and raise 50000 on unexpected error.
 
-Output Format:
+---
 
-Provide each stored procedure in a separate code block, fully functional and ready to execute.
+### 3. `usp_ActivityUpdate`
+
+**Parameters** — all columns **except** `CreatedDateTime`, `CreatedByUser`, 
+`CreatedByProgram`. Include `@SystemTimestamp binary(8)`.
+
+**Defaults:** Same `Updated*` defaulting logic as Delete.
+
+**Logic:**
+- Validate inputs (see *Validation Rules*).
+- `UPDATE` the row inside `TRY…CATCH`.
+- Use optimistic locking: `WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp`.
+- If `@@ROWCOUNT = 0`, raise error 50004.
+- Log and raise 50000 on unexpected error.
+
+---
+
+### 4. `usp_ActivityRetrieve`
+
+**Parameters** — all columns except `UpdatedDateTime`, `UpdatedByUser`, `UpdatedByProgram`, 
+all defaulted to `NULL`. **Exceptions:**
+- `@ActiveFlag`       defaults to `1`
+- `@SystemDeleteFlag` defaults to `'N'`
+
+**Filtering logic:**
+
+| Column type     | Pattern |
+|-----------------|---------|
+| `uniqueidentifier` | `(@Param IS NULL OR Column = @Param)` |
+| `nvarchar` / `varchar` | `(@Param IS NULL OR CHARINDEX(@Param, Column, 0) > 0)` |
+| `date` (range)  | `(@Param IS NULL OR (Column >= @Param AND Column < DATEADD(day, 1, @Param)))` |
+| `tinyint` / `smallint` | `(@Param IS NULL OR Column = @Param)` |
+
+Apply these patterns to **every** filterable column in the `SELECT … WHERE` clause.
+
+---
+
+### 5. `usp_ActivityRetrieveForList`
+
+**No parameters.**
+
+Returns `ActivityId` and `Name` for all rows where `ActiveFlag = 1` 
+and `SystemDeleteFlag <> 'Y'`, ordered by `Name ASC`.
+
+---
+
+## Validation Rules (apply to Insert, Update, and where relevant Delete)
+
+Apply these checks **before** entering the `TRY` block, using `IF` guards and `RAISERROR` 
+(or `THROW` — your choice, but be consistent throughout all five procedures):
+
+| Error # | Condition | Message |
+|---------|-----------|---------|
+| 50001 | Required parameter is `NULL` | `'<ParameterName> is required and cannot be NULL.'` |
+| 50002 | `nvarchar`/`varchar` value exceeds column max length (`LEN(@Param) > N`) | `'<ParameterName> exceeds the maximum allowed length of <N> characters.'` |
+| 50003 | `@ActiveFlag NOT IN (0, 1)` or `@SystemDeleteFlag NOT IN ('N', 'Y')` | `'Invalid value for <ParameterName>. Allowed values are: <list>.'` |
+| 50004 | `@@ROWCOUNT = 0` after Update/Delete (optimistic lock) | `'Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.'` |
+| 50000 | Unexpected error caught in `CATCH` | `'Error occurred during <OperationName> operation.'` |
+
+---
+
+## CATCH Block Template
+
+Use this exact pattern in every stored procedure:
+
+```sql
+BEGIN CATCH
+    INSERT INTO [dbo].[DbError]
+        (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
+    VALUES
+        (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(),
+         ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(),
+         SYSUTCDATETIME());
+
+    -- Re-raise a sanitized error to the caller
+    RAISERROR(50000, 16, 1, N'Error occurred during <OperationName> operation.');
+END CATCH;
+```
+
+---
+
+## T-SQL Coding Standards
+
+Apply **all** of the following in every procedure:
+
+- `SET NOCOUNT ON;` as the first executable statement.
+- `SET XACT_ABORT ON;` to ensure transactions roll back on unhandled errors.
+- Use `[schema].[ObjectName]` two-part naming everywhere.
+- Use `WITH (NOLOCK)` hints **only** on `SELECT` procedures (`usp_ActivityRetrieve`, 
+  `usp_ActivityRetrieveForList`) — never on write procedures.
+- Use `SYSUTCDATETIME()` (not `GETDATE()` or `GETUTCDATE()`) for all datetime defaults.
+- Declare and assign local defaults (`@UpdatedDateTime`, etc.) at the top of the procedure 
+  body, before any validation.
+- `RETURN` immediately after raising a validation error so no further code executes.
+- Do **not** use `SELECT *` — always project named columns.
+- Use `N'…'` prefix for all `nvarchar` string literals.
+- Add a single-line header comment block to each procedure:
+
+```sql
+-- ============================================================
+-- Procedure : [dbo].[usp_Activity<operation>]
+-- Purpose   : <one-line description>
+-- Author    : [Eduardo Nicacio]
+-- Created   : YYYY-MM-DD
+-- ============================================================
+```
+
+---
+
+## Output Format
+
+- Output **exactly five** fenced ` ```sql ``` ` code blocks, one per procedure, in the order 
+  listed above.
+- Each block must be complete and executable as-is — no placeholders, no `/* … */` stubs,  
+  no truncation.
+- Do **not** add prose commentary between code blocks unless asked.
