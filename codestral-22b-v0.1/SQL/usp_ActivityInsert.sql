@@ -1,11 +1,16 @@
--- usp_ActivityInsert
-CREATE PROCEDURE [dbo].[usp_ActivityInsert]
+-- ============================================================
+-- Procedure : [dbo].[usp_ActivityInsert]
+-- Purpose   : Inserts a new activity into the Activity table
+-- Author    : Eduardo Nicacio
+-- Created   : 2023-04-19
+-- ============================================================
+CREATE OR ALTER PROCEDURE [dbo].[usp_ActivityInsert]
 (
     @ProjectId uniqueidentifier,
     @ProjectMemberId uniqueidentifier,
     @Name nvarchar(128),
     @Description nvarchar(4000),
-    @StartDate date = NULL,
+    @Date date = NULL,
     @TargetDate date = NULL,
     @EndDate date = NULL,
     @ProgressStatus tinyint = NULL,
@@ -14,37 +19,52 @@ CREATE PROCEDURE [dbo].[usp_ActivityInsert]
     @Risk tinyint = NULL,
     @Tags nvarchar(200) = NULL,
     @ActiveFlag tinyint = 1,
+    @SystemDeleteFlag char(1) = 'N',
     @CreatedDateTime datetime2(7),
     @CreatedByUser nvarchar(100),
     @CreatedByProgram nvarchar(100)
-) AS
+)
+AS
 BEGIN
-    -- Input parameter validation
-    IF @ProjectId IS NULL OR @ProjectMemberId IS NULL OR @Name IS NULL OR @Description IS NULL OR @ActiveFlag NOT IN (0, 1)
-        THROW 50001, 'Null parameters are not allowed.', 1;
-    IF LEN(@Name) > 128 OR LEN(@Description) > 4000 OR LEN(@Tags) > 200
-        THROW 50002, 'Input string exceeds maximum column length.', 1;
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-    -- Insert statement
+    -- Input validation
+    IF @ProjectId IS NULL
+        RAISERROR(50001, 16, 1, N'@ProjectId is required and cannot be NULL.');
+    IF @ProjectMemberId IS NULL
+        RAISERROR(50001, 16, 1, N'@ProjectMemberId is required and cannot be NULL.');
+    IF @Name IS NULL
+        RAISERROR(50001, 16, 1, N'@Name is required and cannot be NULL.');
+    IF LEN(@Name) > 128
+        RAISERROR(50002, 16, 1, N'@Name exceeds the maximum allowed length of 128 characters.');
+    IF @Description IS NULL
+        RAISERROR(50001, 16, 1, N'@Description is required and cannot be NULL.');
+    IF LEN(@Description) > 4000
+        RAISERROR(50002, 16, 1, N'@Description exceeds the maximum allowed length of 4000 characters.');
+    IF @ActiveFlag NOT IN (0, 1)
+        RAISERROR(50003, 16, 1, N'Invalid value for @ActiveFlag. Allowed values are: 0, 1.');
+    IF @SystemDeleteFlag NOT IN ('N', 'Y')
+        RAISERROR(50003, 16, 1, N'Invalid value for @SystemDeleteFlag. Allowed values are: ''N'', ''Y''.');
+
     BEGIN TRY
+        DECLARE @ActivityId uniqueidentifier;
+        SET @ActivityId = NEWID();
+
         INSERT INTO [dbo].[Activity] (
-            [ActivityId], [ProjectId], [ProjectMemberId], [Name], [Description], [StartDate],
-            [TargetDate], [EndDate], [ProgressStatus], [ActivityPoints], [Priority], [Risk],
-            [Tags], [ActiveFlag], [SystemDeleteFlag], [CreatedDateTime], [CreatedByUser],
-            [CreatedByProgram], [UpdatedDateTime], [UpdatedByUser], [UpdatedByProgram]
+            ActivityId, ProjectId, ProjectMemberId, Name, Description, Date, TargetDate, EndDate, ProgressStatus, ActivityPoints, Priority, Risk, Tags, ActiveFlag, SystemDeleteFlag, CreatedDateTime, CreatedByUser, CreatedByProgram
         ) VALUES (
-            NEWID(), @ProjectId, @ProjectMemberId, @Name, @Description, @StartDate,
-            @TargetDate, @EndDate, @ProgressStatus, @ActivityPoints, @Priority, @Risk,
-            @Tags, @ActiveFlag, 'N', @CreatedDateTime, @CreatedByUser, @CreatedByProgram, NULL, NULL, NULL
+            @ActivityId, @ProjectId, @ProjectMemberId, @Name, @Description, @Date, @TargetDate, @EndDate, @ProgressStatus, @ActivityPoints, @Priority, @Risk, @Tags, @ActiveFlag, @SystemDeleteFlag, @CreatedDateTime, @CreatedByUser, @CreatedByProgram
         );
+
+        SELECT ActivityId;
     END TRY
     BEGIN CATCH
-        DECLARE @ErrorMessage NVARCHAR(4000), @ErrorSeverity INT, @ErrorState INT;
-        SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE();
-        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
-        INSERT INTO [dbo].[DbError] ([ErrorDateTime], [ErrorNumber], [ErrorSeverity], [ErrorState], [ErrorProcedure], [ErrorLine], [ErrorMessage])
-        VALUES (SYSUTCDATETIME(), ERROR_NUMBER(), @ErrorSeverity, @ErrorState, 'usp_ActivityInsert', ERROR_LINE(), @ErrorMessage);
-        THROW;
-    END CATCH
+        INSERT INTO [dbo].[DbError] (
+            ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime
+        ) VALUES (
+            ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(), SYSUTCDATETIME()
+        );
+        RAISERROR(50000, 16, 1, N'Error occurred during Insert operation.');
+    END CATCH;
 END;
-GO

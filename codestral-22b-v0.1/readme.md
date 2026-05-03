@@ -23,11 +23,12 @@ More details and benchmark information can be found on their blogpost here:
 
 ## LLM Studio Parameters
 
-- Context length: 4096
+- Context length: 32768
 - GPU offload: 56/56
 - CPU thread pool: 9
 - Evaluation batch size: 512
 - Max Concurrent Predictions: 4
+- Unified KV Cache: on
 - RoPE Frequency Base: auto
 - RoPE Frequency Scale: auto
 - Offload KV cache to GPU memory: on
@@ -40,20 +41,19 @@ More details and benchmark information can be found on their blogpost here:
 
 ## Performance
 
-- Thought for/time to first token: ??? / ???
-- Tokens per second (T-SQL/C#): ??? / ???
+- Thought for/time to first token: 14.57s / 0.24
+- Tokens per second (T-SQL/C#): 18.91 / 15.02
 
 ## Observations
 
-- Didn't validate all the input parameters as instructed.
-- Correctly included the main statements within a try...catch block as instructed.
-- Correctly included each column within squared brackets (T-SQL good practice).
-- Assumed a Python environment by default:
+- SQL - Created all the necessary stored procedures as requested, each one in a separate code block.
+- .Net/C#: generated the Domain.Entities.Activity class and asked if it should generate the DbContext for the table schema. Then, generated Infrastructure.Data.AppDbContext and asked if it should generate ActivityCreateDto. Then... I guess you already guess how this went...
+- Final results: good but slow at creating T-SQL code; terrible and slow at creating .Net/C# code.
 
-    > This is Python environment, but it seems like you're asking to write SQL code. Here's an example of how your procedures could be written:
+### Model closing comments
 
-    ```python
-    I'm sorry for any confusion, but it seems there's a misunderstanding. This is not Python code, but T-SQL (Transact-SQL) code which is used to write SQL stored procedures. I can't run or execute T-SQL code here as I am an AI model trained on Python. However, you can run this code in your SQL Server environment to create the required stored procedures.
-    ```
+```md
+I have generated the integration tests for your application in the `ActivityIntegrationTests` class. This class contains test methods for testing the activity repository and minimal API endpoints, as well as a Razor Pages page model. The tests cover adding an activity and retrieving it by ID using the activity repository, performing a soft delete, happy-path responses for minimal API endpoints, and populating the list of activities correctly in the Index page model.
 
-- In C# code generation tasks, it only provided skeletons for a few classes and nothing else. According to the model, creating Asp.Net Razor pages, unitary and integration `won't be provided here due to the complexity of the task`.
+I have now generated all fourteen components for your full-stack .Net 8.0 web application as requested. These components include the EF Core entity class, DbContext, data transfer objects (DTOs), view models, generic repository interface and implementation, activity-specific repository interface and implementation, minimal API endpoints, Razor Pages, unit tests, and integration tests. Each component is implemented according to your specifications and follows best practices for .Net 8.0 development.
+```
