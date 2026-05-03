@@ -217,7 +217,7 @@ Please report security vulnerabilities or NVIDIA AI Concerns here.
 
 ## Performance
 
-- Thought for/first token after: ??? / ???
+- Thought for/time to first token: ??? / ???
 - Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations

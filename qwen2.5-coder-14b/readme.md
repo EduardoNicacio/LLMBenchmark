@@ -46,13 +46,13 @@ This repo contains the instruction-tuned 14B Qwen2.5-Coder model in the GGUF For
 - Keep model in memory: on
 - Try mmap(): on
 - Seed: off
-- Flash attention: off
-- K Cache Quantization Type: off
-- V Cache Quantization Type: off
+- Flash attention: on
+- K Cache Quantization Type: Q8_0
+- V Cache Quantization Type: Q8_0
 
 ## Performance
 
-- Thought for/first token after: ??? / ???
+- Thought for/time to first token: ??? / ???
 - Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations

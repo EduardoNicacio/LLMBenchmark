@@ -1,0 +1,21 @@
+@page "/Edit"
+@model YourApp.Web.ViewModels.ActivityUpdateViewModel
+@{
+    ViewData["Title"] = "Edit Activity";
+}
+<div class="row">
+    <form asp-action="OnPost" method="post">
+        <div class="col-md-6 mb-4">
+            <label class="form-label">ActivityId</label>
+            <input asp-for="ActivityId" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <label class="form-label">SystemTimestamp</label>
+            <input asp-for="SystemTimestamp" class="form-control" hidden />
+        </div>
+
+        <!-- Other fields similar to Create -->
+        <button type="submit" class="btn btn-primary mt-2">Save</button>
+    </form>
+</div>

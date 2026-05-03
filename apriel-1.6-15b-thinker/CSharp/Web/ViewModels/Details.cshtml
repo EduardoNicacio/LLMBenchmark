@@ -1,0 +1,12 @@
+@page "/Details"
+@model YourApp.Application.DTOs.ActivityReadDto
+@{
+    ViewData["Title"] = "Activity Details";
+}
+<div class="row">
+    <h2>@Model.Name</h2>
+    <p><strong>Description:</strong> @Model.Description</p>
+    <!-- Additional details omitted for brevity -->
+    <a asp-page="/Edit" asp-controller="Activities">Edit</a> |
+    <a asp-page="/Delete" asp-controller="Activities">Delete</a>
+</div>

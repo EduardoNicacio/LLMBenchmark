@@ -1,124 +1,114 @@
-/*=============================================================
-  Procedure: dbo.usp_ActivityInsert
-  Purpose : Insert a new row into the Activity table.
-  Input   : All columns except UpdatedDateTime, UpdatedByUser,
-            UpdatedByProgram and SystemTimestamp.
-            CreatedDateTime, CreatedByUser and CreatedByProgram are required.
-  Output  : Rows affected (0 or 1)
-=============================================================*/
-CREATE PROCEDURE dbo.usp_ActivityInsert
-    @ActivityId        [uniqueidentifier],
-    @ProjectId         [uniqueidentifier],
-    @ProjectMemberId   [uniqueidentifier],
-    @Name              [nvarchar](128),
-    @Description       [nvarchar](4000),
-    @StartDate         [date] = NULL,
-    @TargetDate        [date] = NULL,
-    @EndDate           [date] = NULL,
-    @ProgressStatus    [tinyint] = NULL,
-    @ActivityPoints    [smallint] = NULL,
-    @Priority          [tinyint] = NULL,
-    @Risk              [tinyint] = NULL,
-    @Tags              [nvarchar](200) = NULL,
-    @ActiveFlag        [tinyint],
-    @SystemDeleteFlag  [char](1),
-    @CreatedDateTime   [datetime2](7),
-    @CreatedByUser     [nvarchar](100),
-    @CreatedByProgram  [nvarchar](100)
+-- ============================================================
+-- Procedure : [dbo].[usp_ActivityInsert]
+-- Purpose   : Insert a new Activity row and return its ID.
+-- Author    : Eduardo Nicacio
+-- Created   : 2025-09-05
+-- ============================================================
+CREATE PROCEDURE [dbo].[usp_ActivityInsert]
+    @ActivityId        uniqueidentifier,
+    @ProjectId         uniqueidentifier,
+    @ProjectMemberId   uniqueidentifier,
+    @Name              nvarchar(128),
+    @Description       nvarchar(4000),
+    @StartDate         date = NULL,
+    @TargetDate        date = NULL,
+    @EndDate           date = NULL,
+    @ProgressStatus    tinyint = NULL,
+    @ActivityPoints    smallint = NULL,
+    @Priority          tinyint = NULL,
+    @Risk              tinyint = NULL,
+    @Tags              nvarchar(200) = NULL,
+    @ActiveFlag        tinyint,
+    @SystemDeleteFlag  char(1),
+    @CreatedDateTime   datetime2(7),
+    @CreatedByUser     nvarchar(100),
+    @CreatedByProgram  nvarchar(100)
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-    /*------------------- Input validation -------------------*/
-    IF @ActivityId IS NULL      THEN THROW 50001, 'ActivityId cannot be null.', 1;
-    IF @ProjectId IS NULL       THEN THROW 50001, 'ProjectId cannot be null.', 1;
-    IF @ProjectMemberId IS NULL THEN THROW 50001, 'ProjectMemberId cannot be null.', 1;
-    IF @Name IS NULL            THEN THROW 50001, 'Name cannot be null.', 1;
-    IF @Description IS NULL     THEN THROW 50001, 'Description cannot be null.', 1;
-    IF @ActiveFlag IS NULL      THEN THROW 50001, 'ActiveFlag cannot be null.', 1;
-    IF LEN(@SystemDeleteFlag) <> 1   THEN THROW 50001, 'SystemDeleteFlag must be a single character (N/Y).', 1;
-    IF @CreatedDateTime IS NULL     THEN THROW 50001, 'CreatedDateTime cannot be null.', 1;
-    IF @CreatedByUser IS NULL       THEN THROW 50001, 'CreatedByUser cannot be null.', 1;
-    IF @CreatedByProgram IS NULL   THEN THROW 50001, 'CreatedByProgram cannot be null.', 1;
+    -- Validation: required parameters not null
+    IF @ActivityId IS NULL
+        RAISERROR(50001, 16, 1, N'ActivityId is required and cannot be NULL.');
+        RETURN;
+    IF @ProjectId IS NULL
+        RAISERROR(50001, 16, 1, N'ProjectId is required and cannot be NULL.');
+        RETURN;
+    IF @ProjectMemberId IS NULL
+        RAISERROR(50001, 16, 1, N'ProjectMemberId is required and cannot be NULL.');
+        RETURN;
+    IF @Name IS NULL
+        RAISERROR(50001, 16, 1, N'Name is required and cannot be NULL.');
+        RETURN;
+    IF @Description IS NULL
+        RAISERROR(50001, 16, 1, N'Description is required and cannot be NULL.');
+        RETURN;
+    IF @ActiveFlag IS NULL
+        RAISERROR(50001, 16, 1, N'ActiveFlag is required and cannot be NULL.');
+        RETURN;
+    IF @SystemDeleteFlag IS NULL
+        RAISERROR(50001, 16, 1, N'SystemDeleteFlag is required and cannot be NULL.');
+        RETURN;
+    IF @CreatedDateTime IS NULL
+        RAISERROR(50001, 16, 1, N'CreatedDateTime is required and cannot be NULL.');
+        RETURN;
+    IF @CreatedByUser IS NULL
+        RAISERROR(50001, 16, 1, N'CreatedByUser is required and cannot be NULL.');
+        RETURN;
+    IF @CreatedByProgram IS NULL
+        RAISERROR(50001, 16, 1, N'CreatedByProgram is required and cannot be NULL.');
+        RETURN;
 
-    /* String length checks */
-    IF LEN(@Name) > 128            THEN THROW 50002, 'Name exceeds maximum length of 128 characters.', 1;
-    IF LEN(@Description) > 4000   THEN THROW 50002, 'Description exceeds maximum length of 4000 characters.', 1;
+    -- Validation: length constraints
+    IF LEN(@Name) > 128
+        RAISERROR(50002, 16, 1, N'Name exceeds the maximum allowed length of 128 characters.');
+        RETURN;
+    IF LEN(@Description) > 4000
+        RAISERROR(50002, 16, 1, N'Description exceeds the maximum allowed length of 4000 characters.');
+        RETURN;
     IF @Tags IS NOT NULL AND LEN(@Tags) > 200
-                                            THEN THROW 50002, 'Tags exceeds maximum length of 200 characters.', 1;
-    IF @CreatedByUser IS NOT NULL AND LEN(@CreatedByUser) > 100
-                                                THEN THROW 50002, 'CreatedByUser exceeds maximum length of 100 characters.', 1;
-    IF @CreatedByProgram IS NOT NULL AND LEN(@CreatedByProgram) > 100
-                                                THEN THROW 50002, 'CreatedByProgram exceeds maximum length of 100 characters.', 1;
+        RAISERROR(50002, 16, 1, N'Tags exceeds the maximum allowed length of 200 characters.');
+        RETURN;
+    IF LEN(@CreatedByUser) > 100
+        RAISERROR(50002, 16, 1, N'CreatedByUser exceeds the maximum allowed length of 100 characters.');
+        RETURN;
+    IF LEN(@CreatedByProgram) > 100
+        RAISERROR(50002, 16, 1, N'CreatedByProgram exceeds the maximum allowed length of 100 characters.');
+        RETURN;
 
-    /* Flag validation */
-    IF @ActiveFlag NOT IN (0,1)   THEN THROW 50003, 'ActiveFlag must be 0 or 1.', 1;
-    IF @SystemDeleteFlag NOT IN ('N','Y')
-                                            THEN THROW 50003, 'SystemDeleteFlag must be ''N'' or ''Y''.', 1;
+    -- Validation: flag values
+    IF @ActiveFlag NOT IN (0,1)
+        RAISERROR(50003, 16, 1, N'Invalid value for ActiveFlag. Allowed values are: 0, 1.');
+        RETURN;
+    IF @SystemDeleteFlag NOT IN (N'N', N'Y')
+        RAISERROR(50003, 16, 1, N'Invalid value for SystemDeleteFlag. Allowed values are: N, Y.');
+        RETURN;
 
-    /*------------------- Insert operation -------------------*/
     BEGIN TRY
-        INSERT INTO dbo.Activity (
-            ActivityId,
-            ProjectId,
-            ProjectMemberId,
-            Name,
-            Description,
-            StartDate,
-            TargetDate,
-            EndDate,
-            ProgressStatus,
-            ActivityPoints,
-            Priority,
-            Risk,
-            Tags,
-            ActiveFlag,
-            SystemDeleteFlag,
-            CreatedDateTime,
-            CreatedByUser,
-            CreatedByProgram
+        INSERT INTO [dbo].[Activity] (
+            ActivityId, ProjectId, ProjectMemberId, Name, Description,
+            StartDate, TargetDate, EndDate, ProgressStatus, ActivityPoints,
+            Priority, Risk, Tags, ActiveFlag, SystemDeleteFlag,
+            CreatedDateTime, CreatedByUser, CreatedByProgram
         )
         VALUES (
-            @ActivityId,
-            @ProjectId,
-            @ProjectMemberId,
-            @Name,
-            @Description,
-            @StartDate,
-            @TargetDate,
-            @EndDate,
-            @ProgressStatus,
-            @ActivityPoints,
-            @Priority,
-            @Risk,
-            @Tags,
-            @ActiveFlag,
-            @SystemDeleteFlag,
-            @CreatedDateTime,
-            @CreatedByUser,
-            @CreatedByProgram
+            @ActivityId, @ProjectId, @ProjectMemberId, @Name, @Description,
+            @StartDate, @TargetDate, @EndDate, @ProgressStatus, @ActivityPoints,
+            @Priority, @Risk, @Tags, @ActiveFlag, @SystemDeleteFlag,
+            @CreatedDateTime, @CreatedByUser, @CreatedByProgram
         );
+
+        SELECT @ActivityId AS ActivityId;
     END TRY
     BEGIN CATCH
-        DECLARE @ErrMsg   nvarchar(4000) = ERROR_MESSAGE(),
-                @ErrNum   int          = ERROR_NUMBER(),
-                @ErrSev   int          = ERROR_SEVERITY(),
-                @ErrStat  int          = ERROR_STATE();
-
-        INSERT INTO dbo.DbError (ErrorId, ErrorMessage, ErrorNumber,
-                                 ErrorSeverity, ErrorState,
-                                 ProcedureName, ParameterInfo)
-        VALUES (
-            NEWID(),
-            @ErrMsg,
-            @ErrNum,
-            @ErrSev,
-            @ErrStat,
-            'dbo.usp_ActivityInsert',
-            ERROR_PROCEDURE()
-        );
-
-        THROW 50000, N'Error occurred during INSERT operation.', 1;
+        INSERT INTO [dbo].[DbError]
+            (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
+        VALUES
+            (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(),
+             ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(),
+             SYSUTCDATETIME());
+        RAISERROR(50000, 16, 1, N'Error occurred during usp_ActivityInsert operation.');
     END CATCH;
 END
 GO

@@ -32,7 +32,7 @@ Please see our [blog post](https://huggingface.co/blog/ServiceNow-AI/apriel-1p6-
 
 ## LLM Studio Parameters
 
-- Context length: 8192
+- Context length: 65536
 - GPU offload: 48/48
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -43,21 +43,18 @@ Please see our [blog post](https://huggingface.co/blog/ServiceNow-AI/apriel-1p6-
 - Keep model in memory: on
 - Try mmap(): on
 - Seed: off
-- Flash attention: off
-- K Cache Quantization Type: off
-- V Cache Quantization Type: off
+- Flash attention: on
+- K Cache Quantization Type: Q8_0
+- V Cache Quantization Type: Q8_0
 
 ## Performance
 
-- Thought for/first token after: ??? / ???
-- Tokens per second (T-SQL/C#): ??? / ???
+- Thought for/time to first token: 0.08s / 6.04s
+- Tokens per second (T-SQL/C#): 33.04 / 29.44
 
 ## Observations
 
 - Differently from other "thinking" or "reasoning" models, it displays its chain of thought directly in the LM Studio chat output.
 - It included a nice documentation at the header of each stored procedure, and split them all into separate code blocks as asked.
-- It missed some explicit instructions, like not using Update* as input parameters in the retrieve stored procedures.
-- On the other hand, it was one of the few models to suggest a cleaner way of handling parameter validation and execution error logging by using a separate stored procedure, called `dbo.RunWithErrorLogging`.
-- This model took longer to complete these tasks because it generated two sets of stored procedures, with and without the try...catch block for handling errors on Insert, Update or Select operations.
-- The model generated tons of C# code. However, when outputting the latest classes after a long thought, it ran out of context/memory and could not proceed. A 24/32GB video card may help with that.
-- The model spent over 2h of GPU time writing C# code and fine-tunning it. I've aborted the execution on the final step, when the model was about to display its final answer. On a second attempt I let the model run loose and, after 4 hours of thinking/planning, it crashed.
+- I remember that, during my code generation tasks with Apriel 1.5, several times the model failed to produce any usable .Net/C# code because it crashed mid chain-of-thought. This appears to be solved for Apriel 1.6.
+- The model produced, at a first look, very good quality code that will be tried when I reach the phase of actually executing it.

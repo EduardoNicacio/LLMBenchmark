@@ -1,69 +1,50 @@
-/*=============================================================
-  Procedure: dbo.usp_ActivityDelete
-  Purpose : Soft‑delete an Activity row by setting SystemDeleteFlag='Y'.
-  Input   : ActivityId, SystemTimestamp (optimistic lock), optional audit fields.
-            If any of UpdatedDateTime/UpdatedByUser/UpdatedByProgram are NULL,
-            they default to SYSUTCDATETIME(), SYSTEM_USER and APP_NAME().
-=============================================================*/
-CREATE PROCEDURE dbo.usp_ActivityDelete
-    @ActivityId        [uniqueidentifier],
-    @SystemTimestamp   [timestamp],
-    @UpdatedDateTime   [datetime2](7) = NULL,
-    @UpdatedByUser     [nvarchar](100) = NULL,
-    @UpdatedByProgram  [nvarchar](100) = NULL
+-- ============================================================
+-- Procedure : [dbo].[usp_ActivityDelete]
+-- Purpose   : Soft‑delete an Activity row using optimistic locking.
+-- Author    : Eduardo Nicacio
+-- Created   : 2025-09-05
+-- ============================================================
+CREATE PROCEDURE [dbo].[usp_ActivityDelete]
+    @ActivityId        uniqueidentifier,
+    @UpdatedDateTime   datetime2(7) = NULL,
+    @UpdatedByUser     nvarchar(100) = NULL,
+    @UpdatedByProgram  nvarchar(100) = NULL,
+    @SystemTimestamp   binary(8)
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-    /*------------------- Input validation -------------------*/
-    IF @ActivityId IS NULL       THEN THROW 50001, 'ActivityId cannot be null.', 1;
-    IF @SystemTimestamp IS NULL  THEN THROW 50001, 'SystemTimestamp cannot be null.', 1;
-
-    /* Default audit columns */
+    -- Default assignments for audit columns
     IF @UpdatedDateTime IS NULL SET @UpdatedDateTime = SYSUTCDATETIME();
-    IF @UpdatedByUser   IS NULL SET @UpdatedByUser   = SYSTEM_USER;
+    IF @UpdatedByUser IS NULL SET @UpdatedByUser = SYSTEM_USER;
     IF @UpdatedByProgram IS NULL SET @UpdatedByProgram = APP_NAME();
 
-    DECLARE @SystemDeleteFlag char(1) = 'Y';
+    -- Validation: ActivityId required
+    IF @ActivityId IS NULL
+        RAISERROR(50001, 16, 1, N'ActivityId is required and cannot be NULL.');
+        RETURN;
 
-    /*------------------- Delete (soft‑delete) operation -------------------*/
     BEGIN TRY
-        UPDATE dbo.Activity
-        SET
-            SystemDeleteFlag = @SystemDeleteFlag,
+        UPDATE [dbo].[Activity]
+        SET SystemDeleteFlag = N'Y',
             UpdatedDateTime   = @UpdatedDateTime,
             UpdatedByUser     = @UpdatedByUser,
             UpdatedByProgram  = @UpdatedByProgram
-        WHERE ActivityId      = @ActivityId
+        WHERE ActivityId = @ActivityId
           AND SystemTimestamp = @SystemTimestamp;
+
+        IF @@ROWCOUNT = 0
+            RAISERROR(50004, 16, 1, N'Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.');
     END TRY
     BEGIN CATCH
-        DECLARE @ErrMsg   nvarchar(4000) = ERROR_MESSAGE(),
-                @ErrNum   int          = ERROR_NUMBER(),
-                @ErrSev   int          = ERROR_SEVERITY(),
-                @ErrStat  int          = ERROR_STATE();
-
-        INSERT INTO dbo.DbError (ErrorId, ErrorMessage, ErrorNumber,
-                                 ErrorSeverity, ErrorState,
-                                 ProcedureName, ParameterInfo)
-        VALUES (
-            NEWID(),
-            @ErrMsg,
-            @ErrNum,
-            @ErrSev,
-            @ErrStat,
-            'dbo.usp_ActivityDelete',
-            ERROR_PROCEDURE()
-        );
-
-        IF @ErrNum = 2627   -- optimistic‑lock violation
-        BEGIN
-            THROW 50004, N'Operation failed because another user has updated or deleted this Activity. Your changes have been lost. Please review their changes before trying again.', 1;
-        END
-        ELSE
-        BEGIN
-            THROW 50000, N'Error occurred during DELETE operation.', 1;
-        END
+        INSERT INTO [dbo].[DbError]
+            (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
+        VALUES
+            (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(),
+             ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(),
+             SYSUTCDATETIME());
+        RAISERROR(50000, 16, 1, N'Error occurred during usp_ActivityDelete operation.');
     END CATCH;
 END
 GO

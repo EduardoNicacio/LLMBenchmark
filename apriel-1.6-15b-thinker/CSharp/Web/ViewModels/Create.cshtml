@@ -1,0 +1,35 @@
+@page "/Create"
+@model YourApp.Web.ViewModels.ActivityCreateViewModel
+@{
+    ViewData["Title"] = "Create Activity";
+}
+<div class="row">
+    <form asp-action="OnPost" method="post">
+        <div class="col-md-6 mb-4">
+            <label class="form-label">ProjectId</label>
+            <input asp-for="ProjectId" class="form-control" />
+            <validation-message-for="ProjectId" class="is-invalid" />
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <label class="form-label">ProjectMemberId</label>
+            <input asp-for="ProjectMemberId" class="form-control" />
+            <validation-message-for="ProjectMemberId" class="is-invalid" />
+        </div>
+
+        <div class="col-12 mb-4">
+            <label class="form-label">Name</label>
+            <input asp-for="Name" class="form-control" />
+            <validation-message-for="Name" class="is-invalid" />
+        </div>
+
+        <div class="col-12 mb-4">
+            <label class="form-label">Description</label>
+            <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+            <validation-message-for="Description" class="is-invalid" />
+        </div>
+
+        <!-- Additional fields omitted for brevity -->
+        <button type="submit" class="btn btn-primary mt-2">Create</button>
+    </form>
+</div>

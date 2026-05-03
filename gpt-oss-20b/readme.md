@@ -38,13 +38,13 @@
 - Seed: off
 - Number of experts: 4
 - Force Model Expert Weights onto CPU: off
-- Flash attention: off
-- K Cache Quantization Type: off
-- V Cache Quantization Type: off
+- Flash attention: on
+- K Cache Quantization Type: Q8_0
+- V Cache Quantization Type: Q8_0
 
 ## Performance
 
-- Thought for/first token after: ??? / ???
+- Thought for/time to first token: ??? / ???
 - Tokens per second (T-SQL/C#): ??? / ???
 
 ## Observations
