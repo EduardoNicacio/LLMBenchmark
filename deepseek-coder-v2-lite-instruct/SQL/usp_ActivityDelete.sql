@@ -1,32 +1,26 @@
-CREATE PROCEDURE [dbo].[usp_ActivityDelete]
-    @ActivityId uniqueidentifier,
-    @UpdatedDateTime datetime2(7) = NULL OUTPUT,
-    @UpdatedByUser nvarchar(100) = NULL OUTPUT,
-    @UpdatedByProgram nvarchar(100) = NULL OUTPUT,
-    @SystemTimestamp timestamp
-AS
+-- ============================================================
+-- Procedure : [dbo].[usp_ActivityDelete]
+-- Purpose   : Delete an activity record from the Activity table.
+-- Author    : Eduardo Nicacio
+-- Created   : 2023-04-01
+-- ============================================================
+SET NOCOUNT ON;
 BEGIN TRY
-    IF @ActivityId IS NULL OR (@UpdatedDateTime IS NOT NULL AND @UpdatedByUser IS NOT NULL AND @UpdatedByProgram IS NOT NULL AND @SystemTimestamp IS NOT NULL)
-        RAISERROR('50001', 16, 1) -- Null parameter error
+    DECLARE @UpdatedDateTime DATETIME2 = SYSUTCDATETIME();
+    DECLARE @UpdatedByUser NVARCHAR(100) = SYSTEM_USER;
+    DECLARE @UpdatedByProgram NVARCHAR(100) = APP_NAME();
 
-    SELECT @UpdatedDateTime = SYSUTCDATETIME(), @UpdatedByUser = SYSTEM_USER, @UpdatedByProgram = APP_NAME() WHERE @UpdatedDateTime IS NULL OR @UpdatedByUser IS NULL OR @UpdatedByProgram IS NULL;
+    -- Validation checks
+    IF @ActivityId IS NULL RAISERROR(50001, 16, 1, N'@ActivityId');
 
-    DECLARE @CurrentSystemTimestamp timestamp;
-    SELECT @CurrentSystemTimestamp = SystemTimestamp FROM [dbo].[Activity] WHERE ActivityId = @ActivityId;
+    UPDATE [dbo].[Activity]
+    SET SystemDeleteFlag = 'Y', UpdatedDateTime = @UpdatedDateTime, UpdatedByUser = @UpdatedByUser, UpdatedByProgram = @UpdatedByProgram
+    WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
-    IF @CurrentSystemTimestamp != @SystemTimestamp
-        RAISERROR('50004', 16, 1) -- Optimistic lock violation
-
-    UPDATE [dbo].[Activity] SET
-        SystemDeleteFlag = 'Y',
-        UpdatedDateTime = @UpdatedDateTime,
-        UpdatedByUser = @UpdatedByUser,
-        UpdatedByProgram = @UpdatedByProgram
-    WHERE ActivityId = @ActivityId;
+    IF @@ROWCOUNT = 0 RAISERROR(50004, 16, 1);
 END TRY
 BEGIN CATCH
-    IF ERROR_NUMBER() = 50001 OR ERROR_NUMBER() = 50004
-        RAISERROR('Error occurred during delete operation.', 16, 1);
-    ELSE
-        EXEC dbo.usp_LogError; -- Assuming this procedure logs errors to DbError table
-END CATCH
+    INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
+    VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+    RAISERROR(50000, 16, 1, N'Error occurred during usp_ActivityDelete operation.');
+END CATCH;

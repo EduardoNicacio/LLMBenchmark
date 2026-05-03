@@ -1,59 +1,29 @@
-CREATE PROCEDURE [dbo].[usp_ActivityUpdate]
-    @ActivityId uniqueidentifier,
-    @ProjectId uniqueidentifier = NULL,
-    @ProjectMemberId uniqueidentifier = NULL,
-    @Name nvarchar(128) = NULL,
-    @Description nvarchar(4000) = NULL,
-    @StartDate date = NULL,
-    @TargetDate date = NULL,
-    @EndDate date = NULL,
-    @ProgressStatus tinyint = NULL,
-    @ActivityPoints smallint = NULL,
-    @Priority tinyint = NULL,
-    @Risk tinyint = NULL,
-    @Tags nvarchar(200) = NULL,
-    @ActiveFlag tinyint = NULL,
-    @SystemDeleteFlag char(1) = NULL,
-    @UpdatedDateTime datetime2(7) = NULL OUTPUT,
-    @UpdatedByUser nvarchar(100) = NULL OUTPUT,
-    @UpdatedByProgram nvarchar(100) = NULL OUTPUT,
-    @SystemTimestamp timestamp
-AS
+-- ============================================================
+-- Procedure : [dbo].[usp_ActivityUpdate]
+-- Purpose   : Update an existing activity record in the Activity table.
+-- Author    : Eduardo Nicacio
+-- Created   : 2023-04-01
+-- ============================================================
+SET NOCOUNT ON;
 BEGIN TRY
-    IF @ActivityId IS NULL OR (@UpdatedDateTime IS NOT NULL AND @UpdatedByUser IS NOT NULL AND @UpdatedByProgram IS NOT NULL AND @SystemTimestamp IS NOT NULL)
-        RAISERROR('50001', 16, 1) -- Null parameter error
+    DECLARE @UpdatedDateTime DATETIME2 = SYSUTCDATETIME();
+    DECLARE @UpdatedByUser NVARCHAR(100) = SYSTEM_USER;
+    DECLARE @UpdatedByProgram NVARCHAR(100) = APP_NAME();
 
-    SELECT @UpdatedDateTime = SYSUTCDATETIME(), @UpdatedByUser = SYSTEM_USER, @UpdatedByProgram = APP_NAME() WHERE @UpdatedDateTime IS NULL OR @UpdatedByUser IS NULL OR @UpdatedByProgram IS NULL;
+    -- Validation checks
+    IF @ActivityId IS NULL RAISERROR(50001, 16, 1, N'@ActivityId');
+    IF LEN(@Name) > 128 RAISERROR(50002, 16, 1, N'@Name', 128);
+    -- Add more validation rules as needed...
 
-    DECLARE @CurrentSystemTimestamp timestamp;
-    SELECT @CurrentSystemTimestamp = SystemTimestamp FROM [dbo].[Activity] WHERE ActivityId = @ActivityId;
+    UPDATE [dbo].[Activity]
+    SET ProjectId = @ProjectId, ProjectMemberId = @ProjectMemberId, Name = @Name, Description = @Description, StartDate = @StartDate, TargetDate = @TargetDate, EndDate = @EndDate, ProgressStatus = @ProgressStatus,
+        ActivityPoints = @ActivityPoints, Priority = @Priority, Risk = @Risk, Tags = @Tags, ActiveFlag = @ActiveFlag, UpdatedDateTime = @UpdatedDateTime, UpdatedByUser = @UpdatedByUser, UpdatedByProgram = @UpdatedByProgram
+    WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
-    IF @CurrentSystemTimestamp != @SystemTimestamp
-        RAISERROR('50004', 16, 1) -- Optimistic lock violation
-
-    UPDATE [dbo].[Activity] SET
-        ProjectId = ISNULL(@ProjectId, ProjectId),
-        ProjectMemberId = ISNULL(@ProjectMemberId, ProjectMemberId),
-        Name = ISNULL(@Name, Name),
-        Description = ISNULL(@Description, Description),
-        StartDate = ISNULL(@StartDate, StartDate),
-        TargetDate = ISNULL(@TargetDate, TargetDate),
-        EndDate = ISNULL(@EndDate, EndDate),
-        ProgressStatus = ISNULL(@ProgressStatus, ProgressStatus),
-        ActivityPoints = ISNULL(@ActivityPoints, ActivityPoints),
-        Priority = ISNULL(@Priority, Priority),
-        Risk = ISNULL(@Risk, Risk),
-        Tags = ISNULL(@Tags, Tags),
-        ActiveFlag = ISNULL(@ActiveFlag, ActiveFlag),
-        SystemDeleteFlag = ISNULL(@SystemDeleteFlag, SystemDeleteFlag),
-        UpdatedDateTime = @UpdatedDateTime,
-        UpdatedByUser = @UpdatedByUser,
-        UpdatedByProgram = @UpdatedByProgram
-    WHERE ActivityId = @ActivityId;
+    IF @@ROWCOUNT = 0 RAISERROR(50004, 16, 1);
 END TRY
 BEGIN CATCH
-    IF ERROR_NUMBER() = 50001 OR ERROR_NUMBER() = 50004
-        RAISERROR('Error occurred during update operation.', 16, 1);
-    ELSE
-        EXEC dbo.usp_LogError; -- Assuming this procedure logs errors to DbError table
-END CATCH
+    INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
+    VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+    RAISERROR(50000, 16, 1, N'Error occurred during usp_ActivityUpdate operation.');
+END CATCH;

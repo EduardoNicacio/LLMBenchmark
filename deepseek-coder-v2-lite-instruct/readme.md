@@ -18,7 +18,7 @@ In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performan
 
 ## LLM Studio Parameters
 
-- Context length: 8192
+- Context length: 32768
 - GPU offload: 27/27
 - CPU thread pool: 9
 - Evaluation batch size: 512
@@ -31,21 +31,16 @@ In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performan
 - Seed: off
 - Number of experts: 6
 - Force Model Experts Weights onto CPU: off
-- Flash attention: on
-- K Cache Quantization Type: Q8_0
-- V Cache Quantization Type: Q8_0
+- Flash attention: off
+- K Cache Quantization Type: n/a
+- V Cache Quantization Type: n/a
 
 ## Performance
 
-- Thought for/time to first token: ??? / ???
-- Tokens per second (T-SQL/C#): ??? / ???
+- Thought for/time to first token: 5.65s / ???
+- Tokens per second (T-SQL/C#): 29.88 / ???
 
 ## Observations
 
 - Didn't include input parameter validation (error codes 50001, 50002, 50003) for all the stored procedures as required.
-- Used error code 50003 within the try...catch block, which should be used to validate the flag parameters (ActiveFlag, SystemDeleteFlag).
-- Didn't follow the instructions to generate production-ready C# code. Here's the message this model provided at the end of the task:
-
-    ```txt
-    This setup provides a comprehensive example of how to structure a full-stack .NET application based on the provided SQL table definition, following best practices and including necessary validation and testing. Adjust namespaces and paths according to your project's actual structure.
-    ```
+- Used error code 5000 within the try...catch block, which is expected.
