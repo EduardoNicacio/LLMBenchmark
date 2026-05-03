@@ -1,0 +1,29 @@
+@page "/Activities"
+@model ActivityListViewModel
+
+<h1>Activities</h1>
+<a asp-page="Create" class="btn btn-primary">Create New</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items) {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.ProgressStatus</td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@item.ActivityId" class="btn btn-info">Details</a>
+                    <a asp-page="Edit" asp-route-id="@item.ActivityId" class="btn btn-warning">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@item.ActivityId" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
