@@ -13,17 +13,22 @@ BEGIN TRY
     -- Validation checks
     IF @ActivityId IS NULL RAISERROR(50001, 16, 1, N'@ActivityId');
     IF LEN(@Name) > 128 RAISERROR(50002, 16, 1, N'@Name', 128);
-    -- Add more validation rules as needed...
+    IF @ActiveFlag NOT IN (0, 1) RAISERROR(50003, 16, 1, N'@ActiveFlag', '0 or 1');
+    IF @SystemDeleteFlag NOT IN ('N', 'Y') RAISERROR(50003, 16, 1, N'@SystemDeleteFlag', '''N'' or ''Y''');
 
+    -- Perform update with optimistic locking
     UPDATE [dbo].[Activity]
-    SET ProjectId = @ProjectId, ProjectMemberId = @ProjectMemberId, Name = @Name, Description = @Description, StartDate = @StartDate, TargetDate = @TargetDate, EndDate = @EndDate, ProgressStatus = @ProgressStatus,
-        ActivityPoints = @ActivityPoints, Priority = @Priority, Risk = @Risk, Tags = @Tags, ActiveFlag = @ActiveFlag, UpdatedDateTime = @UpdatedDateTime, UpdatedByUser = @UpdatedByUser, UpdatedByProgram = @UpdatedByProgram
+    SET ProjectId = @ProjectId, ProjectMemberId = @ProjectMemberId, Name = @Name, Description = @Description, StartDate = @StartDate, TargetDate = @TargetDate, EndDate = @EndDate, ProgressStatus = @ProgressStatus, ActivityPoints = @ActivityPoints, Priority = @Priority, Risk = @Risk, Tags = @Tags, ActiveFlag = @ActiveFlag, SystemDeleteFlag = @SystemDeleteFlag, UpdatedDateTime = @UpdatedDateTime, UpdatedByUser = @UpdatedByUser, UpdatedByProgram = @UpdatedByProgram
     WHERE ActivityId = @ActivityId AND SystemTimestamp = @SystemTimestamp;
 
     IF @@ROWCOUNT = 0 RAISERROR(50004, 16, 1);
 END TRY
 BEGIN CATCH
-    INSERT INTO [dbo].[DbError] (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
-    VALUES (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(), ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(), SYSUTCDATETIME());
+    INSERT INTO [dbo].[DbError]
+        (ErrorNumber, ErrorSeverity, ErrorState, ErrorProcedure, ErrorLine, ErrorMessage, ErrorDateTime)
+    VALUES
+        (ERROR_NUMBER(), ERROR_SEVERITY(), ERROR_STATE(),
+         ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE(),
+         SYSUTCDATETIME());
     RAISERROR(50000, 16, 1, N'Error occurred during usp_ActivityUpdate operation.');
 END CATCH;
